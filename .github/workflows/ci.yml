@@ -83,7 +83,9 @@ jobs:
 
       - name: Run SonarQube analysis
         run: mvn sonar:sonar
+        working-directory: back
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
 
