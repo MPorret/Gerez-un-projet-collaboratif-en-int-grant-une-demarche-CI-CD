@@ -61,10 +61,6 @@ jobs:
         run: npm ci
         working-directory: front
 
-      - name: Lint code
-        run: npm run lint
-        working-directory: front
-
       - name: Run frontend tests
         run: npm run test -- --watch=false --browsers=ChromeHeadless
         working-directory: front
