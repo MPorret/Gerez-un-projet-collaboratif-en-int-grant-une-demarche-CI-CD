@@ -55,9 +55,10 @@ jobs:
         with:
           node-version: 18
           cache: npm
+          cache-dependency-path: front/package-lock.json
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         working-directory: front
 
       - name: Lint code
@@ -67,6 +68,7 @@ jobs:
       - name: Run frontend tests
         run: npm run test -- --watch=false --browsers=ChromeHeadless
         working-directory: front
+
 
 
   sonar-analysis:
