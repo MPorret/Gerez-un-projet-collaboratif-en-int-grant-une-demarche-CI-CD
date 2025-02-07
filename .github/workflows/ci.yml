@@ -102,4 +102,17 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=joselct17_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
+      - name: SonarQube Quality Gate
+        run: |
+          STATUS=$(curl -s -u "${{ secrets.SONAR_TOKEN }}:" \
+          "${{ secrets.SONAR_HOST_URL }}/api/qualitygates/project_status?projectKey=joselct17_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD" \
+          | jq -r '.projectStatus.status')
+
+          if [[ "$STATUS" != "OK" ]]; then
+            echo "Quality Gate failed: $STATUS"
+            exit 1
+          fi
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
