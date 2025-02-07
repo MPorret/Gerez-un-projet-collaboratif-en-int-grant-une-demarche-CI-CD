@@ -57,16 +57,17 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        working-directory: front
         run: npm install
+        working-directory: front
 
       - name: Lint code
-        working-directory: front
         run: npm run lint
+        working-directory: front
 
       - name: Run frontend tests
-        working-directory: front
         run: npm run test -- --watch=false --browsers=ChromeHeadless
+        working-directory: front
+
 
   sonar-analysis:
     name: SonarQube Analysis
