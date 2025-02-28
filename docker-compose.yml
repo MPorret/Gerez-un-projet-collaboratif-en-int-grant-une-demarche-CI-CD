@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  back:
+    build: 
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: bobapp-backend
+    networks:
+      - bobapp-network
+    ports:
+      - "8080:8080"
+
+  front:
+    build: 
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: bobapp-frontend
+    networks:
+      - bobapp-network
+    ports:
+      - "80:80"
+    depends_on:
+      - back
+
+networks:
+  bobapp-network:
+    driver: bridge
