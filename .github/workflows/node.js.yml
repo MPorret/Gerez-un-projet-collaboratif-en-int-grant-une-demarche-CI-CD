@@ -17,11 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Use Node.js 20
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
     - name: List files in the repository
       run: |
         ls ${{ github.workspace }}
@@ -29,6 +24,12 @@ jobs:
       run: |
         cd front
         ls
+
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
     - run: |
         cd front 
         npm install
