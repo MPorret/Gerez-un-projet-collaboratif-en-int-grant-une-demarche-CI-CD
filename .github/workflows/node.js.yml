@@ -14,21 +14,21 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
+
+    - name: Use Node.js 20
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: '20'
         cache: 'npm'
     - name: List files in the repository
       run: |
         ls ${{ github.workspace }}
+    - name: List files in the front repository
+      run: |
+        cd front
+        ls
     - run: |
         cd front 
         npm install
