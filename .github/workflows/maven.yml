@@ -28,8 +28,10 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: List files in the repository
+      run: ls 
+    - name: List files in the back repository
       run: |
-        cd ..
+        cd back
         ls 
     - name: Build with Maven
       run: |
