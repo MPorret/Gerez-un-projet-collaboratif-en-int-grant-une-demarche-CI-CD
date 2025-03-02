@@ -29,7 +29,15 @@ jobs:
     - name: List files in the repository
       run: |
         ls ${{ github.workspace }}
-    - run: cd front && npm install
-    - run: cd front && npm ci
-    - run: cd front && npm run build --if-present
-    - run: cd front && npm test
+    - run: |
+        cd front 
+        npm install
+    - run: |
+        cd front
+        npm ci
+    - run: |
+        cd front
+        npm run build --if-present
+    - run: |
+        cd front
+        npm test
