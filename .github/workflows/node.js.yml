@@ -5,39 +5,48 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ $default-branch, dev ]
+    branches: [$default-branch, dev]
   pull_request:
-    branches: [ $default-branch, dev ]
+    branches: [$default-branch, dev]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: List files in the repository
-      run: |
-        ls ${{ github.workspace }}
-    - name: List files in the front repository
-      run: |
-        cd front
-        ls
-    - name: Use Node.js 20
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: front/package-lock.json
-    - name: Install dependencies
-      run: |
-        cd front
-        npm ci
-    - name: Build project
-      run: |
-        cd front
-        npm run build --if-present
-    - name: Run tests
-      run: |
-        cd front
-        npm test
+      - uses: actions/checkout@v4
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+
+      - name: List files in the front repository
+        run: |
+          cd front
+          ls
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: front/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd front
+          npm ci
+
+      - name: Build project
+        run: |
+          cd front
+          npm run build --if-present
+
+      - name: Run tests
+        run: |
+          cd front
+          npm test
+
+      - name: Upload test coverage to artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: karma-report
+          path: front/coverage
