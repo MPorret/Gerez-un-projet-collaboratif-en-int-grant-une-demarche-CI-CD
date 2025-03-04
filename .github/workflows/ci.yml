@@ -102,16 +102,22 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build and analyze backend with SonarCloud
-        working-directory: back  # ✅ Exécuter dans le bon répertoire
+        working-directory: back
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=joselct17_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          -Dsonar.projectKey=joselct17_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD \
+          -Dsonar.sources=src/main/java \
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
       - name: Analyze frontend with SonarCloud
         working-directory: front
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: npx sonar-scanner -D"sonar.projectKey=joselct17_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD" -D"sonar.javascript.lcov.reportPaths=coverage/bobapp/lcov.info"
+        run: npx sonar-scanner \
+          -D"sonar.projectKey=joselct17_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD" \
+          -D"sonar.sources=src" \
+          -D"sonar.javascript.lcov.reportPaths=coverage/bobapp/lcov.info"
 
 
       - name: SonarQube Quality Gate
