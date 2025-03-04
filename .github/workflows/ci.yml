@@ -69,7 +69,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage
-          path: front/coverage/lcov.info
+          path: front/coverage/bobapp/lcov.info
 
   sonar-analysis:
     name: SonarQube Analysis
