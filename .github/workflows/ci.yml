@@ -111,9 +111,8 @@ jobs:
         working-directory: front
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: npx sonar-scanner \
-          -Dsonar.projectKey=joselct17_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD \
-          -Dsonar.javascript.lcov.reportPaths=coverage/bobapp/lcov.info
+        run: npx sonar-scanner -D"sonar.projectKey=joselct17_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD" -D"sonar.javascript.lcov.reportPaths=coverage/bobapp/lcov.info"
+
 
       - name: SonarQube Quality Gate
         run: |
