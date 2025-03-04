@@ -120,7 +120,7 @@ jobs:
           | jq -r '.projectStatus.status')
 
           if [[ "$STATUS" != "OK" ]]; then
-            echo "Quality Gate failed: $STATUS"
+            echo "Quality Gate failed: $STATUS" 
             exit 1
           fi
         env:
