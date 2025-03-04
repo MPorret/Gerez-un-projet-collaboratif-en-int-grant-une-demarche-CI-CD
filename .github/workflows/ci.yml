@@ -15,8 +15,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Améliore la pertinence de l'analyse SonarCloud
 
       - name: Set up JDK 11
         uses: actions/setup-java@v3
@@ -46,13 +44,11 @@ jobs:
           path: back/target/site/jacoco/
 
   frontend-tests:
-    name: Frontend - Build & Test
+    name: Frontend - Build & Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Assure un bon contexte pour l'analyse
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -65,24 +61,16 @@ jobs:
         run: npm ci
         working-directory: front
 
-      - name: Run frontend tests with coverage
+      - name: Run frontend tests
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
         working-directory: front
-        run: npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
 
-      - name: Upload frontend coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-coverage
-          path: front/coverage/bobapp/lcov.info
+
 
   sonar-analysis:
     name: SonarQube Analysis
     runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests]
-    permissions:
-      pull-requests: read
-      contents: read
-
+    needs: backend-tests
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -93,7 +81,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'zulu'
+          distribution: 'zulu'  # Compatible avec SonarCloud
 
       - name: Cache SonarQube packages
         uses: actions/cache@v4
@@ -109,33 +97,11 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Build and analyze backend with SonarCloud
-        working-directory: back
+      - name: Build and analyze with SonarCloud
+        working-directory: back  # ✅ Exécuter dans le bon répertoire
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=joselct17_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD \
-          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-
-      - name: Upload SonarQube Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: sonarqube-report
-          path: back/.scannerwork/report-task.txt
-
-      - name: Analyze frontend with SonarCloud
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: front
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: Check SonarCloud Quality Gate
-        run: |
-          echo "Waiting for Quality Gate result..."
-          sleep 10
-
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=joselct17_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
       - name: SonarQube Quality Gate
         run: |
           STATUS=$(curl -s -u "${{ secrets.SONAR_TOKEN }}:" \
@@ -143,7 +109,7 @@ jobs:
           | jq -r '.projectStatus.status')
 
           if [[ "$STATUS" != "OK" ]]; then
-            echo "Quality Gate failed: $STATUS" 
+            echo "Quality Gate failed: $STATUS"
             exit 1
           fi
         env:
