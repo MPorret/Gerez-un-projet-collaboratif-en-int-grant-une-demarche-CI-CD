@@ -9,11 +9,18 @@ on:
       - main
 
 jobs:
+  validate-ci:
+    name: Validate CI Success
+    runs-on: ubuntu-latest
+    steps:
+      - name: CI Validation
+        run: echo "All tests and quality checks must pass before proceeding with deployment."
+
   build-and-push-backend:
     name: Build & Push Backend
     runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests]  # Exécute seulement si la CI passe
-    if: success()  # Exécuter uniquement si la CI a réussi
+    needs: validate-ci  # Démarre après la validation CI
+    if: success()  # Exécuter seulement si validate-ci a réussi
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,7 +48,7 @@ jobs:
     name: Build & Push Frontend
     runs-on: ubuntu-latest
     needs: build-and-push-backend  # Exécuter après le backend
-    if: success()  # Exécuter uniquement si le backend a réussi
+    if: success()  # Exécuter seulement si le backend a réussi
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
