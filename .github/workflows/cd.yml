@@ -12,6 +12,8 @@ jobs:
   build-and-push-backend:
     name: Build & Push Backend
     runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests]  # Exécute seulement si la CI passe
+    if: success()  # Exécuter uniquement si la CI a réussi
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,6 +41,7 @@ jobs:
     name: Build & Push Frontend
     runs-on: ubuntu-latest
     needs: build-and-push-backend  # Exécuter après le backend
+    if: success()  # Exécuter uniquement si le backend a réussi
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
