@@ -29,7 +29,7 @@ jobs:
           mvn clean verify
 
       - name: 📊 Publier le rapport Jacoco
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: backend-jacoco-report
           path: back/target/site/jacoco/
@@ -58,7 +58,7 @@ jobs:
           ng test --watch=false --browsers=ChromeHeadless --code-coverage
 
       - name: 📊 Publier le rapport Coverage Frontend
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage-report
           path: front/coverage/
