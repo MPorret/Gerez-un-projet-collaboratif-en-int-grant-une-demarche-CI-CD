@@ -10,14 +10,14 @@ on:
 
 jobs:
   backend-tests:
-    name: 🏗️ Tests et Coverage Backend
+    name: Tests et Coverage Backend
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Récupérer le code
+      - name: Récupérer le code
         uses: actions/checkout@v4
 
-      - name: ☕ Installer Java 11 et Maven
+      - name: Installer Java 11 et Maven
         uses: actions/setup-java@v3
         with:
           distribution: "temurin"
@@ -28,39 +28,39 @@ jobs:
           cd back
           mvn clean verify
 
-      - name: 📊 Publier le rapport Jacoco
+      - name: Publier le rapport Jacoco
         uses: actions/upload-artifact@v4
         with:
           name: backend-jacoco-report
           path: back/target/site/jacoco/
 
   frontend-tests:
-    name: 🎨 Tests et Coverage Frontend
+    name: Tests et Coverage Frontend
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Récupérer le code
+      - name: Récupérer le code
         uses: actions/checkout@v4
 
-      - name: 🟢 Installer Node.js et Angular
+      - name: Installer Node.js et Angular
         uses: actions/setup-node@v3
         with:
           node-version: "18"
 
-      - name: 📦 Installer les dépendances du front
+      - name: Installer les dépendances du front
         run: |
           cd front
           npm install
 
-      - name: 🚀 Installer Angular CLI
+      - name: Installer Angular CLI
         run: npm install -g @angular/cli
 
-      - name: 🧪 Lancer les tests Angular avec ChromeHeadless
+      - name: Lancer les tests Angular avec ChromeHeadless
         run: |
           cd front
           ng test --watch=false --browsers=ChromeHeadless --code-coverage
 
-      - name: 📊 Publier le rapport Coverage Frontend
+      - name: Publier le rapport Coverage Frontend
         uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage-report
