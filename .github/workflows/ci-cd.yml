@@ -52,6 +52,9 @@ jobs:
           cd front
           npm install
 
+      - name: 🚀 Installer Angular CLI
+        run: npm install -g @angular/cli
+
       - name: 🧪 Lancer les tests Angular avec ChromeHeadless
         run: |
           cd front
