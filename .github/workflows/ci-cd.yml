@@ -12,6 +12,7 @@ jobs:
   frontend-tests:
     name: Tests et Coverage Frontend
     runs-on: ubuntu-latest
+
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v4
@@ -44,14 +45,13 @@ jobs:
 
       - name: 🔍 Analyse SonarQube Frontend
         uses: SonarSource/sonarqube-scan-action@v5
-        with:
-          projectBaseDir: front
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   backend-tests:
     name: Tests et Coverage Backend
     runs-on: ubuntu-latest
+
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v4
@@ -76,8 +76,8 @@ jobs:
           path: back/target/site/jacoco/
 
       - name: 🔍 Analyse SonarQube Backend
-        uses: SonarSource/sonarqube-scan-action@v5
-        with:
-          projectBaseDir: back
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          cd back
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=AlbanFraincart_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
