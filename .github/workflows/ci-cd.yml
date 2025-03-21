@@ -78,8 +78,8 @@ jobs:
           path: back/target/site/jacoco/
 
       - name: Analyse SonarQube Backend
-        uses: SonarSource/sonarqube-scan-action@v5
-        with:
-          projectBaseDir: "back"
+        run: |
+          cd back
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
