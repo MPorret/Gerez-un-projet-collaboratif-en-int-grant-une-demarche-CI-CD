@@ -9,40 +9,6 @@ on:
       - "**" # Exécute le workflow sur toutes les PRs
 
 jobs:
-  backend-tests:
-    name: Tests et Coverage Backend
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Installer Java 11 et Maven
-        uses: actions/setup-java@v3
-        with:
-          distribution: "temurin"
-          java-version: "11"
-
-      - name: 🔧 Build et Tests Backend avec Jacoco
-        run: |
-          cd back
-          mvn clean verify
-
-      - name: Publier le rapport Jacoco
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-jacoco-report
-          path: back/target/site/jacoco/
-
-      - name: 🔍 Analyse SonarQube Backend
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          cd back
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=AlbanFraincart_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
-
   frontend-tests:
     name: Tests et Coverage Frontend
     runs-on: ubuntu-latest
@@ -81,3 +47,37 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  backend-tests:
+    name: Tests et Coverage Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Installer Java 11 et Maven
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "11"
+
+      - name: 🔧 Build et Tests Backend avec Jacoco
+        run: |
+          cd back
+          mvn clean verify
+
+      - name: Publier le rapport Jacoco
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jacoco-report
+          path: back/target/site/jacoco/
+
+      - name: 🔍 Analyse SonarQube Backend
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          cd back
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=AlbanFraincart_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
