@@ -41,7 +41,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           cd back
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectBaseDir=../
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=AlbanFraincart_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
 
   frontend-tests:
     name: Tests et Coverage Frontend
