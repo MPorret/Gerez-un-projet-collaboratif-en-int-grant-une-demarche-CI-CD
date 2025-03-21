@@ -43,17 +43,8 @@ jobs:
           name: frontend-coverage-report
           path: front/coverage/
 
-      # Ici, nous utilisons une commande sonar-scanner pour n'analyser que le module frontend.
       - name: 🔍 Analyse SonarQube Frontend
-        run: |
-          sonar-scanner \
-            -Dsonar.projectKey=AlbanFraincart_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD \
-            -Dsonar.organization=albanfraincart \
-            -Dsonar.modules=frontend \
-            -Dsonar.projectBaseDir=front \
-            -Dsonar.sources=src \
-            -Dsonar.language=TypeScript \
-            -Dsonar.java.binaries=""
+        uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -89,5 +80,4 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           cd back
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-            -Dsonar.projectKey=AlbanFraincart_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=AlbanFraincart_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
