@@ -43,8 +43,10 @@ jobs:
           name: frontend-coverage-report
           path: front/coverage/
 
-      - name: 🔍 Analyse SonarQube Frontend
+      - name: Analyse SonarQube Frontend
         uses: SonarSource/sonarqube-scan-action@v5
+        with:
+          projectBaseDir: "front"
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -75,9 +77,9 @@ jobs:
           name: backend-jacoco-report
           path: back/target/site/jacoco/
 
-      - name: 🔍 Analyse SonarQube Backend
+      - name: Analyse SonarQube Backend
+        working-directory: back
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          cd back
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=AlbanFraincart_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
