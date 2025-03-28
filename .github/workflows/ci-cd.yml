@@ -1,4 +1,4 @@
-name: CI/CD - Tests, Coverage & SonarQube
+name: CI/CD - Tests, Coverage, SonarQube & Docker
 
 on:
   push:
@@ -83,3 +83,31 @@ jobs:
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  build-and-push-docker:
+    name: Build et Push Docker Images
+    runs-on: ubuntu-latest
+    needs: [frontend-tests, backend-tests] # ce job s'exécutera après la réussite des tests précédents
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Connexion à Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build et push image Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./back
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-backend:latest
+
+      - name: Build et push image Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./front
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-frontend:latest
