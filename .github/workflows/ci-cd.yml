@@ -1,85 +1,109 @@
-name: CI/CD - Tests, Coverage & SonarQube
+name: CI/CD - Tests, Coverage, SonarQube & Docker
 
 on:
   push:
     branches:
-      - "**" # Exécute le workflow sur toutes les branches
+      - "**"
   pull_request:
     branches:
-      - "**" # Exécute le workflow sur toutes les PRs
+      - "**"
 
 jobs:
   frontend-tests:
     name: Tests et Coverage Frontend
     runs-on: ubuntu-latest
-
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Installer Node.js et Angular
+      - name: Installer Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "18"
-
       - name: Installer les dépendances du front
         run: |
           cd front
           npm install
-
       - name: Installer Angular CLI
         run: npm install -g @angular/cli
-
       - name: Lancer les tests Angular avec ChromeHeadless
         run: |
           cd front
           ng test --watch=false --browsers=ChromeHeadless --code-coverage
-
       - name: Publier le rapport Coverage Frontend
         uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage-report
           path: front/coverage/
 
-      - name: Analyse SonarQube Frontend
-        uses: SonarSource/sonarqube-scan-action@v5
-        with:
-          projectBaseDir: "front"
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
   backend-tests:
     name: Tests et Coverage Backend
     runs-on: ubuntu-latest
-
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Installer Java 11 et Maven
         uses: actions/setup-java@v3
         with:
           distribution: "temurin"
           java-version: "11"
-
       - name: 🔧 Build et Tests Backend avec Jacoco
         run: |
           cd back
           mvn clean verify
-
       - name: Publier le rapport Jacoco
         uses: actions/upload-artifact@v4
         with:
           name: backend-jacoco-report
           path: back/target/site/jacoco/
 
+  sonar-analyse:
+    name: Analyse SonarQube Front & Back
+    runs-on: ubuntu-latest
+    needs: [frontend-tests, backend-tests]
+    if: github.event_name == 'pull_request' && github.base_ref == 'main' # seulement pour PR vers main
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Analyse SonarQube Frontend
+        uses: SonarSource/sonarqube-scan-action@v5
+        with:
+          projectBaseDir: "front"
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: Analyse SonarQube Backend
         run: |
           cd back
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  build-and-push-docker:
+    name: Build et Push Docker Images
+    runs-on: ubuntu-latest
+    needs: [frontend-tests, backend-tests]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' # seulement après push sur main
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+      - name: Connexion à Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build et push image Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./back
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-backend:latest
+      - name: Build et push image Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./front
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-frontend:latest
