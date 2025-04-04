@@ -72,13 +72,13 @@ Ces KPIs garantissent une **qualité durable** et **robuste** du projet BobApp.
 Quatre retours utilisateurs ont été examinés :
 
 1. **Plantage du navigateur lors de l'envoi de blague**  
-   → Problème critique de stabilité frontend.
+   → Problème critique de stabilité. (prioritaire)
 
 2. **Bug lors de la publication de vidéo**  
-   → Manque d’efficacité dans le suivi et la résolution des bugs.
+   → Manque d’efficacité dans le suivi et la résolution des bugs. (secondaire, à moitié résolu)
 
-3. **Problème de réception de mails**  
-   → Dysfonctionnement du backend, probablement lié à une mauvaise gestion des erreurs ou une fonctionnalité non testée.
+3. **Problème de réception des blagues**  
+   → Dysfonctionnement du backend, probablement lié à une mauvaise gestion des erreurs ou une fonctionnalité non testée. (prioritaire)
 
 4. **Suppression des favoris par frustration**  
    → Résultat des autres problèmes évoqués.
