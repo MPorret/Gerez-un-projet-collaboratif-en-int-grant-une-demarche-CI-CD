@@ -1,0 +1,15 @@
+name: CI Workflow
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v3
+
+      - name: Afficher un message
+        run: echo "CI/CD is working 🎉"
