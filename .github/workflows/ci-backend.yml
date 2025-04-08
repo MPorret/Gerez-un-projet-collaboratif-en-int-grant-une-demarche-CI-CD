@@ -1,0 +1,31 @@
+name: CI Back-End
+
+on:
+  pull_request:
+    paths:
+      - 'back/**'
+      - '.github/workflows/ci-back.yml'
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    name: Test Spring Boot + Coverage
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Build & Test
+        run: mvn clean test jacoco:report
+        working-directory: back
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-report
+          path: back/target/site/jacoco
