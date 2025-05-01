@@ -1,4 +1,4 @@
-name: Frontend tests
+name: Frontend tests with coverage
 
 on:
   push:
