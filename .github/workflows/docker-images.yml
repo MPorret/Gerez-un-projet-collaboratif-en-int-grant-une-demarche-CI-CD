@@ -1,13 +1,21 @@
-name: Docker Build Images
+name: Docker Images
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    secrets:
+      DOCKERHUB_TOKEN:
+        required: true
+        description: 'Docker Hub token'
+      DOCKERHUB_USERNAME:
+        required: true
+        description: 'Docker Hub username'
 
 jobs:
-  build:
+
+  Build-images:
+    name: Build and upload Docker images
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4

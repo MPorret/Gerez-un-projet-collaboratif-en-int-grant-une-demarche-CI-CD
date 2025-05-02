@@ -11,6 +11,7 @@ module.exports = function (config) {
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
       require('karma-junit-reporter'),
+      require('karma-sonarqube-reporter'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
@@ -34,7 +35,7 @@ module.exports = function (config) {
         { type: 'json-summary', subdir: '.', file: 'coverage-summary.json' },
         { type: 'text', subdir: '.', file: 'coverage.txt' },
         { type: 'json', subdir: '.', file: 'coverage.json' },
-        { type: 'lcovonly', subdir: '.', file: 'coverage-lcovonly.txt' },
+        { type: 'lcovonly', subdir: '.', file: 'lcov.info' },
       ]
     },
     junitReporter: {
@@ -42,7 +43,24 @@ module.exports = function (config) {
       outputFile: 'junit.xml',
       useBrowserName: false,
     },
-    reporters: ['progress', 'kjhtml', 'junit'],
+    sonarqubeReporter: {
+      basePath: 'src/app',
+      filePattern: '**/*spec.ts',
+      encoding: 'utf-8',
+      outputFolder: 'reports',
+      legacyMode: false,
+      /**
+       * Report metadata array:
+       * - metadata[0] = browser name
+       * - metadata[1] = browser version
+       * - metadata[2] = plataform name
+       * - metadata[3] = plataform version
+       */
+      reportName: function (metadata) {
+        return 'sonarqube_report.xml';
+      },
+    },
+    reporters: ['progress', 'kjhtml', 'junit', 'sonarqube'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,

@@ -1,0 +1,34 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+    - main
+    types: [opened, synchronize, reopened]
+
+  workflow_dispatch:
+
+jobs:
+  testing:
+    uses: ./.github/workflows/testing.yml
+
+  analysis:
+    # ignore previous jobs results
+    if: ${{ always() }}
+    uses: ./.github/workflows/analysis.yml
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  docker-images:
+    # Only if previous jobs are successful and on main branch
+    if: ${{ success() && github.ref == 'refs/heads/main' }}
+    needs:
+      - testing
+      - analysis
+    uses: ./.github/workflows/docker-images.yml
+    secrets:
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}

@@ -1,15 +1,15 @@
 name: Testing
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_call:
 
 jobs:
   Backend-test:
     name: Backend tests and coverage
     runs-on: ubuntu-latest
+
+    outputs:
+      back-report-url: ${{ steps.test-report-backend.outputs.runHtmlUrl }}
 
     defaults:
       run:
@@ -58,7 +58,7 @@ jobs:
 
       - name: Generate Github Test Report
         uses: phoenix-actions/test-reporting@v15
-        id: test-report-frontend
+        id: test-report-backend
         if: success() || failure()
         with:
           name: Backend Tests Report
@@ -67,11 +67,13 @@ jobs:
 
       - name: Read output variables
         run: |
-          echo "url is ${{ steps.test-report-frontend.outputs.runHtmlUrl }}"
+          echo "url is ${{ steps.test-report-backend.outputs.runHtmlUrl }}"
 
   Frontend-test:
     name: Frontend tests and coverage
     runs-on: ubuntu-latest
+    outputs:
+      front-report-url: ${{ steps.test-report-frontend.outputs.runHtmlUrl }}
 
     defaults:
       run:
