@@ -1,4 +1,4 @@
-name: Frontend tests with coverage test
+name: Frontend Testing
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: Run tests with coverage and upload report
     runs-on: ubuntu-latest
 
     defaults:
@@ -41,10 +42,11 @@ jobs:
           name: karma-report
           path: front/coverage
 
-      - name: Update coverage badge
-        uses:  demyanets/angular-coverage-badges-action@v1
+      - name: Generate Github Test Report
+        uses: phoenix-actions/test-reporting@v15
+        id: test-report
+        if: success() || failure()
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          coverage-summary-path: ./front/coverage/bobapp/coverage-summary.json
-          badges-directory: ./front/.badges
-          protected-branches: '["main"]'
+          name: Frontend Tests Report
+          path: front/coverage/**/junit.xml
+          reporter: java-junit
