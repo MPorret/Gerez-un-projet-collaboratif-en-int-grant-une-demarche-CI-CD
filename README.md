@@ -10,6 +10,8 @@
 
 [![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD)
 
+[![Frontend Testing](https://github.com/Kwaadpepper/Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD/actions/workflows/frontend-tests-coverage.yml/badge.svg)](https://github.com/Kwaadpepper/Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD/actions/workflows/frontend-tests-coverage.yml)
+
 # BobApp
 
 Clone project:
