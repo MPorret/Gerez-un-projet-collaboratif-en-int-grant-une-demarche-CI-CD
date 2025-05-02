@@ -50,3 +50,7 @@ jobs:
           name: Frontend Tests Report
           path: front/coverage/**/junit.xml
           reporter: java-junit
+
+      - name: Read output variables
+        run: |
+          echo "url is ${{ steps.test-report.outputs.runHtmlUrl }}"
