@@ -1,4 +1,4 @@
-name: Frontend tests with coverage test
+name: SonarQube Analysis on Frontend
 
 on:
   push:
