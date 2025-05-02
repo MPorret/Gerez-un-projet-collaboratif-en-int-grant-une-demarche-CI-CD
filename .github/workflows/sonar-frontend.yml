@@ -2,7 +2,8 @@ name: Frontend tests with coverage test
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -32,19 +33,8 @@ jobs:
       - name: Npm install dependencies
         run: npm ci
 
-      - name: Run project tests
-        run: npm run test:ci
-
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: karma-report
-          path: front/coverage
-
-      - name: Update coverage badge
-        uses:  demyanets/angular-coverage-badges-action@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          coverage-summary-path: ./front/coverage/bobapp/coverage-summary.json
-          badges-directory: ./front/.badges
-          protected-branches: '["main"]'
+      - name: Build and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run:
+          npm run test:ci
