@@ -1,0 +1,127 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [workflows,main]
+  pull_request:
+    branches: [workflows,main]
+permissions:
+  pull-requests: write
+  contents: read
+
+env:
+  DOCKER_IMAGE_BACK: bobapp-back
+  DOCKER_IMAGE_FRONT: bobapp-front
+
+jobs:
+  build-test-backend:
+    name: Build & Test Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./back
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build with Maven
+        run: mvn clean install
+
+      - name: Run tests and generate coverage
+        run: mvn test jacoco:report
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: back/target/site/jacoco/
+
+  build-test-frontend:
+    name: Build & Test Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./front
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      # Installe Chrome
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      # Définir la variable d'environnement pour le binaire de Chrome (Karma en a besoin)
+      - name: Set CHROME_BIN env variable
+        run: echo "CHROME_BIN=$(which google-chrome)" >> $GITHUB_ENV
+
+      # Lance les tests front-end
+      - name: Run frontend tests
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        working-directory: ./front
+
+  code-quality-sonar:
+    name: SonarCloud Analysis
+    needs: [build-test-backend, build-test-frontend]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout repository
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+      - name: Build Backend
+        run: mvn clean install
+        working-directory: ./back
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarqube-scan-action@v5.0.0  # Utiliser la version recommandée
+        with:
+          projectBaseDir: .
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PULLREQUEST_BRANCH: ${{ github.head_ref }}
+          SONAR_PULLREQUEST_KEY: ${{ github.event.pull_request.number }}
+          SONAR_PULLREQUEST_BASE: ${{ github.base_ref }}
+  docker-build-push:
+    name: Build & Push Docker Images
+    needs: [code-quality-sonar]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push backend image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_BACK }} ./back
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_BACK }}
+
+      - name: Build and push frontend image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_FRONT }} ./front
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_FRONT }}
