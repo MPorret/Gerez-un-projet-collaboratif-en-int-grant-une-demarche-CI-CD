@@ -32,7 +32,7 @@ jobs:
           ./mvnw jacoco:report
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.3
         with:
           name: backend-coverage-report
           path: backend/target/site/jacoco/
@@ -61,7 +61,7 @@ jobs:
           npm run test -- --watch=false --code-coverage
 
       - name: Upload frontend coverage report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.3
         with:
           name: frontend-coverage-report
           path: frontend/coverage/
