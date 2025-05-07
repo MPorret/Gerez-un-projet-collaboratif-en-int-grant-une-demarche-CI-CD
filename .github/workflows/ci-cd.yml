@@ -31,12 +31,6 @@ jobs:
           cd backend
           ./mvnw jacoco:report
 
-      - name: Upload backend coverage report
-        uses: actions/upload-artifact@v2.3.1
-        with:
-          name: backend-coverage-report
-          path: backend/target/site/jacoco/
-
   frontend-tests:
     name: Run Frontend Tests with Coverage
     runs-on: ubuntu-latest
@@ -59,9 +53,3 @@ jobs:
         run: |
           cd frontend
           npm run test -- --watch=false --code-coverage
-
-      - name: Upload frontend coverage report
-        uses: actions/upload-artifact@v2.3.1
-        with:
-          name: frontend-coverage-report
-          path: frontend/coverage/
