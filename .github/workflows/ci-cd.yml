@@ -24,12 +24,12 @@ jobs:
       - name: Build and test with Maven
         run: |
           cd back
-          ./mvnw clean verify
+          mvn clean verify
 
       - name: Generate JaCoCo report
         run: |
           cd back
-          ./mvnw jacoco:report
+          mvn jacoco:report
 
   frontend-tests:
     name: Run Frontend Tests with Coverage
