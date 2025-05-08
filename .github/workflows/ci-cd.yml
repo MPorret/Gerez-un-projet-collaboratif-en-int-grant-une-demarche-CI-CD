@@ -54,9 +54,4 @@ jobs:
           cd front
           npm run test -- --watch=false --code-coverage
       
-      - name: Upload frontend coverage report
-        uses: actions/upload-artifact@v2.3.1
-        with:
-          name: frontend-coverage-report
-          path: front/coverage/
 
