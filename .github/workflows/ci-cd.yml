@@ -7,9 +7,11 @@ on:
     branches: [ main ]
 
 jobs:
-  test-backend:
-    runs-on: ubuntu-latest
 
+    backend-tests:
+    name: Run Backend Tests with Coverage
+    runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,27 +40,40 @@ jobs:
         with:
           name: jacoco-report
           path: back/target/site/jacoco
-  frontend-tests:
+
+
+    frontend-tests:
     name: Run Frontend Tests with Coverage
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '16.10.0'
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
+        with:
+          path: front/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('front/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: |
-          cd front
-          npm install
+        working-directory: front
+        run: npm ci
 
-      - name: Run Angular tests with coverage
-        run: |
-          cd front
-          npm run test -- --watch=false --code-coverage
-      
+      - name: Run tests with coverage
+        working-directory: front
+        run: npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
 
+      - name: Upload frontend coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: front/coverage/bobapp
