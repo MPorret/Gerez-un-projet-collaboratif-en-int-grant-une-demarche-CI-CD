@@ -7,11 +7,10 @@ on:
     branches: [ main ]
 
 jobs:
-
-    backend-tests:
+  backend-tests:
     name: Run Backend Tests with Coverage
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,8 +40,7 @@ jobs:
           name: jacoco-report
           path: back/target/site/jacoco
 
-
-    frontend-tests:
+  frontend-tests:
     name: Run Frontend Tests with Coverage
     runs-on: ubuntu-latest
 
