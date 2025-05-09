@@ -60,7 +60,7 @@ jobs:
 
       # Étape 3 : Construire et mettre en cache l'image du backend
       - name: Build and cache Spring Boot Backend image (Github Action Cache)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           # Le contexte de build est le répertoire 'back'
           context: back
@@ -100,7 +100,7 @@ jobs:
 
       # Étape 3 : Construire et mettre en cache l'image du frontend
       - name: Build and cache Angular Frontend image (GHA Cache)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           # Le contexte de build est le répertoire 'front'
           context: front
