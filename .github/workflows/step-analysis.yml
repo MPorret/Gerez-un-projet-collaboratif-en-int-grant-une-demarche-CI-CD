@@ -88,17 +88,5 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            --define sonar.projectKey=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
-            --define sonar.projectName=bobapp
-            --define sonar.organization=kwaadpepper
-            --define sonar.sources=front/src,back/src/main
-            --define sonar.tests=front/src,back/src/test
-            --define sonar.inclusions=front/src/**/*.ts,back/src/main/**
-            --define sonar.exclusions=front/node_modules/**,front/coverage/**,front/dist/**,back/target/**
-            --define sonar.test.inclusions=front/src/**/*.spec.ts,front/src/**/*.test.ts,back/src/test/**/*.java
-            --define sonar.javascript.lcov.reportPaths=front/coverage/lcov.info
-            --define sonar.java.binaries=back/target/classes/**
-            --define sonar.coverage.jacoco.xmlReportPaths=back/target/site/jacoco/jacoco.xml
             --define sonar.qualitygate.wait=true
-            --define sonar.login=${{ secrets.SONAR_TOKEN }}
             --define sonar.host.url=https://sonarcloud.io
