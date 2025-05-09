@@ -57,6 +57,8 @@ jobs:
     uses: ./.github/workflows/step-analysis.yml
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
 
   # Construit et pousse les images Docker
