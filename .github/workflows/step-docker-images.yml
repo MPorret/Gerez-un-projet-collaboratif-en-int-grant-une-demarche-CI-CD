@@ -52,13 +52,20 @@ jobs:
           # Récupère seulement le dernier commit
           fetch-depth: 1
 
-      # Étape 2 : Docker Buildx
-        # Installe Docker Buildx pour construire des images Docker
-        # avec le cache de GitHub Actions
+      # Étape 2 : Récupérer le cache de Maven
+      - name: Setup Maven packages cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      # Étape 3 : Installer Docker Buildx pour construire des images Docker
+      # avec le cache de GitHub Actions
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Étape 3 : Construire et mettre en cache l'image du backend
+      # Étape 4 : Construire et mettre en cache l'image du backend
       - name: Build and cache Spring Boot Backend image (Github Action Cache)
         uses: docker/build-push-action@v6
         with:
@@ -92,13 +99,22 @@ jobs:
           # Récupère seulement le dernier commit
           fetch-depth: 1
 
-      # Étape 2 : Docker Buildx
-        # Installe Docker Buildx pour construire des images Docker
-        # avec le cache de GitHub Actions
+      # Étape 2 : Installer Node.js 16 et récupérer le cache de npm
+      - name: Use Node.js 16
+        uses: actions/setup-node@v4
+        env:
+          working-directory: front
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      # Étape 3 : Installer Docker Buildx pour construire des images Docker
+      # avec le cache de GitHub Actions
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Étape 3 : Construire et mettre en cache l'image du frontend
+      # Étape 4 : Construire et mettre en cache l'image du frontend
       - name: Build and cache Angular Frontend image (GHA Cache)
         uses: docker/build-push-action@v6
         with:
