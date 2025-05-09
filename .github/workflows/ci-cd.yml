@@ -39,6 +39,18 @@ jobs:
         with:
           name: jacoco-report
           path: back/target
+      
+      - name: Vérifier rapport de test backend
+        run: |
+          echo "Contenu de back/target :"
+          ls -lh back/target
+          echo "---"
+          echo "Contenu de back/target/surefire-reports :"
+          ls -lh back/target/surefire-reports || echo "Pas de rapport JUnit"
+          echo "---"
+          echo "Fichier jacoco.exec :"
+          ls -lh back/target/jacoco.exec || echo "jacoco.exec manquant"
+            
 
   frontend-tests:
     name: Run Frontend Tests with Coverage
