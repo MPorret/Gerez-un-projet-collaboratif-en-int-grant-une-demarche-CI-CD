@@ -1,27 +1,39 @@
 name: SonarQube Analysis on Frontend
 
+# Ce workflow est déclenché lorsqu'il est appelé par un autre workflow
 on:
   workflow_call:
+    # Secrets pour le workflow
     secrets:
       SONAR_TOKEN:
         required: true
         description: 'SonarQube token'
 
+# Définition des jobs à exécuter dans ce workflow
 jobs:
 
-  Backend-analysis:
+  # Exécute l'analyse du backend avec SonarQube
+  analysis-backend:
     name: Backend analysis with SonarQube
+    # S'exécute sur un runner avec une version d'Ubuntu récente
     runs-on: ubuntu-latest
 
+    # Défini des paramètres par défaut pour les étapes de ce job
     defaults:
       run:
         working-directory: back
 
+    # Étapes de ce job
     steps:
+
+      # Étape 1 : Récupérer le code du dépôt avec Git
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          # Récupère le code du dépôt avec l'historique complet
+          # pour une meilleure pertinence de l'analyse
+          fetch-depth: 0
 
+      # Étape 2 : Installer Java 11
       - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
@@ -29,6 +41,7 @@ jobs:
           distribution: 'temurin'
           architecture: x64
 
+      # Étape 3 : Utiliser le cache de SonarQube
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
@@ -36,6 +49,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
+      # Étape 4 : Utiliser le cache de Maven
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
@@ -43,53 +57,62 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Run Tests and Generate Jacoco Report
-        run: mvn clean verify jacoco:report
-
-      - name: Build and analyze with SonarQube
-        uses: SonarSource/sonarqube-scan-action@v5
+      # Étape 5 : Installer les dépendances, tester le projet et analyser le code avec SonarQube
+      - name: SonarCloud Back-End Scan
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: back
-          args: >
-            --define sonar.projectKey=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
-            --define sonar.organization=kwaadpepper
-            --define sonar.projectName=bobapp-backend
-            --define sonar.java.binaries=target/classes
-            --define sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+        run: |
+          mvn --batch-mode --update-snapshots clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar\
+            --define sonar.projectKey=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD\
+            --define sonar.organization=kwaadpepper\
+            --define sonar.projectName=bobapp-backend\
+            --define sonar.java.binaries=target/classes\
+            --define sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml\
             --define sonar.qualitygate.wait=true
 
-  Frontend-analysis:
+  # Exécute l'analyse du frontend avec SonarQube
+  analysis-frontend:
     name: Frontend analysis with SonarQube
+    # S'exécute sur un runner avec une version d'Ubuntu récente
     runs-on: ubuntu-latest
 
+    # Défini des paramètres par défaut pour les étapes de ce job
     defaults:
       run:
         working-directory: front
 
+    # Étapes de ce job
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
+      # Étape 1 : Récupérer le code du dépôt avec Git
+      - uses: actions/checkout@v4
+        with:
+          # Récupère le code du dépôt avec l'historique complet
+          # pour une meilleure pertinence de l'analyse
+          fetch-depth: 0
+
+      # Étape 2 : Installer Node.js 18 et récupérer le cache de npm
       - name: Use Node.js 18
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '18'
           cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: 'front/package-lock.json'
 
+      # Étape 3 : Installer les dépendances du projet
       - name: Npm install dependencies
         run: npm ci
 
-      - name: Run tests
+      # Étape 4 : Tester le projet
+      - name: Run project tests
         run: npm run test:ci
 
+      # Étape 5 : Analyser le code avec SonarQube
       - name: Build and analyze with SonarQube
         uses: SonarSource/sonarqube-scan-action@v5
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: front
