@@ -40,18 +40,6 @@ jobs:
           name: jacoco-report
           path: back/target
       
-      - name: Vérifier rapport de test backend
-        run: |
-          echo "Contenu de back/target :"
-          ls -lh back/target
-          echo "---"
-          echo "Contenu de back/target/surefire-reports :"
-          ls -lh back/target/surefire-reports || echo "Pas de rapport JUnit"
-          echo "---"
-          echo "Fichier jacoco.exec :"
-          ls -lh back/target/jacoco.exec || echo "jacoco.exec manquant"
-            
-
   frontend-tests:
     name: Run Frontend Tests with Coverage
     runs-on: ubuntu-latest
@@ -125,6 +113,17 @@ jobs:
         run: |
           echo "Fichiers TypeScript détectés :"
           find front/src -name '*.ts' | head -n 10 || echo "Aucun fichier .ts trouvé"
+
+      - name: Vérifier rapport de test backend
+        run: |
+          echo "Contenu de back/target :"
+          ls -lh back/target
+          echo "---"
+          echo "Contenu de back/target/surefire-reports :"
+          ls -lh back/target/surefire-reports || echo "Pas de rapport JUnit"
+          echo "---"
+          echo "Fichier jacoco.exec :"
+          ls -lh back/target/jacoco.exec || echo "jacoco.exec manquant"
           
       - name: Install SonarScanner
         run: npm install -g sonar-scanner
