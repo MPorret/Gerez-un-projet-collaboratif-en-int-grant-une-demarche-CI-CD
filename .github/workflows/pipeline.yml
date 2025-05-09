@@ -43,7 +43,7 @@ jobs:
   # Exécute les tests du backend et du frontend
   testing:
     name: Testing
-    uses: ./.github/workflows/steps/testing.yml
+    uses: ./.github/workflows/step-testing.yml
 
 
   # Analyse le code avec SonarQube
@@ -51,7 +51,7 @@ jobs:
     name: Analysis
     # Se déclenche toujours, même si le job précédent échoue
     if: ${{ always() }}
-    uses: ./.github/workflows/steps/analysis.yml
+    uses: ./.github/workflows/step-analysis.yml
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -68,7 +68,7 @@ jobs:
       - testing
       - analysis
     # Utilise le workflow de construction et de publication d'images Docker
-    uses: ./.github/workflows/steps/docker-images.yml
+    uses: ./.github/workflows/step-docker-images.yml
     with:
       # Tag de l'image à pousser
       # Si la branche est 'release', on tag l'image avec 'latest'
