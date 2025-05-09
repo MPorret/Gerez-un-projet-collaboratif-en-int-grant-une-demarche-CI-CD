@@ -97,5 +97,5 @@ jobs:
           node-version: '16.10.0'
 
       - name: Analyze with SonarCloud
-        run: mvn clean verify sonar:sonar -Dsonar.projectKey=HoakTuah_Projet-10 -Dsonar.organization=hoaktuah36 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-
+        working-directory: back
+        run: mvn clean verify sonar:sonar -Dsonar.login=${{ secrets.SONAR_TOKEN }}
