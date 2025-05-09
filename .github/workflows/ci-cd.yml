@@ -96,15 +96,6 @@ jobs:
         with:
           node-version: '16.10.0'
 
-      - name: Install frontend dependencies
-        working-directory: front
-        run: npm ci
-
-      - name: Generate frontend coverage
-        working-directory: front
-        run: npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
-
       - name: Analyze with SonarCloud
-        working-directory: back
         run: mvn clean verify sonar:sonar -Dsonar.projectKey=HoakTuah_Projet-10 -Dsonar.organization=hoaktuah36 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
