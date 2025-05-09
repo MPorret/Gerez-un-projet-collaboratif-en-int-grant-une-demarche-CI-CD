@@ -75,3 +75,37 @@ jobs:
         with:
           name: frontend-coverage-report
           path: front/coverage/bobapp
+          
+    sonar-analysis:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js (for sonar-scanner)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Download backend coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: jacoco-report
+          path: back/target
+
+      - name: Download frontend coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: front/coverage/bobapp
+
+      - name: Install SonarScanner
+        run: npm install -g sonar-scanner
+
+      - name: Run SonarCloud Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: sonar-scanner -Dsonar.login=$SONAR_TOKEN
