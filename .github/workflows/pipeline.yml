@@ -51,6 +51,9 @@ jobs:
     name: Analysis
     # Se déclenche toujours, même si le job précédent échoue
     if: ${{ always() }}
+    # Requiert que le job de test soit terminé
+    needs:
+      - testing
     uses: ./.github/workflows/step-analysis.yml
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
