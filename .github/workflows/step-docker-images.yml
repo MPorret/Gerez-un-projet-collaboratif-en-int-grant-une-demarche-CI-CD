@@ -99,13 +99,13 @@ jobs:
           # Récupère seulement le dernier commit
           fetch-depth: 1
 
-      # Étape 2 : Installer Node.js 16 et récupérer le cache de npm
-      - name: Use Node.js 16
+      # Étape 2 : Installer Node.js 18 et récupérer le cache de npm
+      - name: Use Node.js 18
         uses: actions/setup-node@v4
         env:
           working-directory: front
         with:
-          node-version: '16'
+          node-version: '18'
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
