@@ -22,19 +22,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build backend image manually
-        run: docker build -t hoaktuah/bobapp-back:latest ./back
-
-      - name: Push backend image manually
-        run: docker push hoaktuah/bobapp-back:latest
-
       # Backend
       - name: Build and push backend image
         uses: docker/build-push-action@v5
         with:
           context: ./back
           push: true
-          tags: hoaktuah/bobapp-back:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-back:latest
 
       # Frontend
       - name: Build and push frontend image
