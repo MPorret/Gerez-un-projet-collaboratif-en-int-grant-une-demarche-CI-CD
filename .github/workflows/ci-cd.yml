@@ -106,8 +106,5 @@ jobs:
 
       - name: Analyze with SonarCloud
         working-directory: back
-        run: mvn clean verify sonar:sonar \
-          -Dsonar.projectKey=HoakTuah_Projet-10 \
-          -Dsonar.organization=HoakTuah \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: mvn clean verify sonar:sonar -Dsonar.projectKey=HoakTuah_Projet-10 -Dsonar.organization=HoakTuah -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
