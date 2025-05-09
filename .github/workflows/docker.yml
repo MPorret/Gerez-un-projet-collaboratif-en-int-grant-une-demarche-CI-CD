@@ -28,7 +28,7 @@ jobs:
         with:
           context: ./back
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-back:latest
+          tags: hoaktuah/bobapp-back:latest
 
       # Frontend
       - name: Build and push frontend image
@@ -36,4 +36,4 @@ jobs:
         with:
           context: ./front
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-front:latest
+          tags: hoaktuah/bobapp-front:latest
