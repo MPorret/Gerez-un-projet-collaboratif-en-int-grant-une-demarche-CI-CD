@@ -1,9 +1,9 @@
-FROM node:latest AS build
+FROM node:18.9.1-slim AS build
 
 WORKDIR /usr/local/app
 COPY ./ /usr/local/app/
 
-RUN yarn
+RUN npm ci
 RUN npm run build
 
 FROM nginx:latest AS production
