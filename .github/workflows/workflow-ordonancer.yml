@@ -1,34 +1,76 @@
-name: Continuous Integration
+# Ce workflow est déclenché par des événements de push ou de pull request
+# sur les branches main, staging et release.
+# Il peut également être déclenché manuellement via l'interface de GitHub.
+#
+# Les jobs de test et d'analyse sont toujours exécutés, même si les tests échouent
+# Les images Docker ne sont construites et poussées que si les tests et l'analyse réussissent
+# et que la branche est main, staging ou release.
+# Les images Docker sont taguées avec le nom de la branche ou 'latest' si la branche est 'release'.
+#
+# Paramètres :
+# - Les secrets DOCKERHUB_TOKEN et DOCKERHUB_USERNAME sont requis pour l'authentification avec Docker Hub
+# - Le secret SONAR_TOKEN est requis pour l'authentification avec SonarQube
+#
+# Jobs :
+# - testing : exécute les tests du backend et du frontend
+# - analysis : effectue une analyse de code avec SonarQube
+# - docker-images : construit et pousse les images Docker du backend et du frontend
+#
+
+name: Continuous Integration and Deployment
 
 on:
+  # Déclenche le workflow sur les événements de push et de pull request
+  # sur les branches main, staging et release
   push:
     branches:
       - main
+      - staging
+      - release
   pull_request:
     branches:
     - main
     types: [opened, synchronize, reopened]
 
+  # Permet de déclencher le workflow manuellement via l'interface de GitHub
+  # Cela permet de tester le workflow sans faire de push
+  # ou de pull request
   workflow_dispatch:
 
+# Définition des jobs à exécuter dans ce workflow
 jobs:
+
+  # Exécute les tests du backend et du frontend
   testing:
     uses: ./.github/workflows/testing.yml
 
+
+  # Analyse le code avec SonarQube
   analysis:
-    # ignore previous jobs results
+    # Se déclenche toujours, même si le job précédent échoue
     if: ${{ always() }}
     uses: ./.github/workflows/analysis.yml
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+
+  # Construit et pousse les images Docker
   docker-images:
-    # Only if previous jobs are successful and on main branch
-    if: ${{ success() && github.ref == 'refs/heads/main' }}
+    # Se déclenche que si le job de test et d'analyse réussissent
+    # et que la branche est main, staging ou release
+    if: ${{ success() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/release') }}
+    # Requiert que le job de test et d'analyse soient terminés
+    # avec succès avant de commencer
     needs:
       - testing
       - analysis
+    # Utilise le workflow de construction et de publication d'images Docker
     uses: ./.github/workflows/docker-images.yml
+    with:
+      # Tag de l'image à pousser
+      # Si la branche est 'release', on tag l'image avec 'latest'
+      # Sinon, on utilise le nom de la branche
+      tag: ${{ github.ref == 'refs/heads/release' && 'latest' || github.ref_name }}
     secrets:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
