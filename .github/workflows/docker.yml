@@ -36,4 +36,4 @@ jobs:
         with:
           context: ./front
           push: true
-          tags: hoaktuah/bobapp-front:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-front:latest
