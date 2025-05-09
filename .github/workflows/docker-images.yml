@@ -36,22 +36,6 @@ on:
 # Définition des jobs à exécuter dans ce workflow
 jobs:
 
-  # Job pour configurer le cache de buildkit
-  # Ce job est requis pour utiliser le cache de GitHub Actions
-  setup-containerd:
-    name: Setup containerd
-    # S'exécute sur un runner avec une version d'Ubuntu récente
-    runs-on: ubuntu-latest
-    steps:
-      - name: Enable containerd image store
-        # Configure le cache de buildkit pour utiliser le driver containerd
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y buildkit containerd
-          sudo mkdir -p /etc/buildkit
-          echo 'driver = "containerd"' | sudo tee /etc/buildkit/buildkitd.toml
-          sudo systemctl restart docker
-
   # Contruit l'image du backend et met le produit en cache (en utilisant le cache GitHub Actions)
   build-backend:
     name: Build Docker backend image
@@ -68,21 +52,13 @@ jobs:
           # Récupère seulement le dernier commit
           fetch-depth: 1
 
-      # Étape 2 : Configurer JDK 11
-      - name: Set up JDK 11
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          # Utilise la distribution Temurin (OpenJDK d'Adoptium)
-          distribution: 'temurin'
-          architecture: x64
+      # Étape 2 : Docker Buildx
+        # Installe Docker Buildx pour construire des images Docker
+        # avec le cache de GitHub Actions
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      # Étape 3 : Compiler le projet Maven
-      - name: Build with Maven
-        # Installer les dépendances Maven et compiler le projet
-        run: mvn clean install -DskipTests
-
-      # Étape 4 : Construire et mettre en cache l'image du backend
+      # Étape 3 : Construire et mettre en cache l'image du backend
       - name: Build and cache Spring Boot Backend image (Github Action Cache)
         uses: docker/build-push-action@v5
         with:
@@ -116,32 +92,13 @@ jobs:
           # Récupère seulement le dernier commit
           fetch-depth: 1
 
-      # Étape 2 : Configurer Node.js 16
-      - name: Setup Node.js 16
-        uses: actions/setup-node@v4
-        with:
-          node-version: 16
-          # Active le cache npm/yarn utilisant le cache GitHub Actions
-          cache: 'npm'
-          # Chemin du fichier de dépendances pour le cache
-          cache-dependency-path: 'front/package-lock.json'
+      # Étape 2 : Docker Buildx
+        # Installe Docker Buildx pour construire des images Docker
+        # avec le cache de GitHub Actions
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-
-      # Étape 3 : Installer les dépendances npm
-      - name: Npm install dependencies
-        # Exécute la commande npm ci utilisant le fichier package-lock.json
-        run: npm ci
-        # S'exécute dans le répertoire 'front'
-        working-directory: front
-
-      # Étape 4 : Compiler l'application frontend (Node.js)
-      - name: Build with NodeJs
-        # Exécute la commande npm run build définie dans le package.json
-        run: npm run build
-        # S'exécute dans le répertoire 'front'
-        working-directory: front
-
-      # Étape 5 : Construire et mettre en cache l'image du frontend
+      # Étape 3 : Construire et mettre en cache l'image du frontend
       - name: Build and cache Angular Frontend image (GHA Cache)
         uses: docker/build-push-action@v5
         with:
