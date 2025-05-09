@@ -101,6 +101,19 @@ jobs:
           name: frontend-coverage-report
           path: front/coverage/bobapp
 
+       - name: Vérifier fichier lcov.info
+        run: |
+          echo "Contenu de front/coverage/bobapp :"
+          ls -lh front/coverage/bobapp || echo "Répertoire introuvable"
+          echo "------"
+          echo "Premieres lignes de lcov.info :"
+          head -n 20 front/coverage/bobapp/lcov.info || echo "lcov.info non trouvé"
+
+      - name: Vérifier fichiers sources frontend
+        run: |
+          echo "Fichiers TypeScript détectés :"
+          find front/src -name '*.ts' | head -n 10 || echo "Aucun fichier .ts trouvé"    
+
       - name: Install SonarScanner
         run: npm install -g sonar-scanner
 
