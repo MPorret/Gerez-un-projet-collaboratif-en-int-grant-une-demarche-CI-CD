@@ -5,6 +5,9 @@ on:
   workflow_call:
     # Secrets pour le workflow
     secrets:
+      SONAR_ORGANIZATION:
+        required: true
+        description: 'SonarQube organization'
       SONAR_TOKEN:
         required: true
         description: 'SonarQube token'
@@ -34,23 +37,7 @@ jobs:
           # pour une meilleure pertinence de l'analyse
           fetch-depth: 0
 
-      # Étape 2 : Utiliser le cache de Maven
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-
-      # Étape 3 : Installer Java 11
-      - name: Set up JDK 11
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          architecture: x64
-
-      # Étape 4 : Installer Node.js 18 et récupérer le cache de npm
+      # Étape 2 : Installer Node.js 18 et récupérer le cache de npm
       - name: Use Node.js 18
         uses: actions/setup-node@v4
         with:
@@ -58,27 +45,22 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'front/package-lock.json'
 
-      # Étape 5 : Installer les dépendances du projet
+      # Étape 3 : Installer les dépendances du projet
       - name: Npm install dependencies
         run: npm ci
         working-directory: front
 
-      # Étape 6 : Compiler le frontend
+      # Étape 4 : Compiler le frontend
       - name: Build frontend
         run: npm run build
         working-directory: front
 
-      # Étape 7 : Tester le frontend
+      # Étape 5 : Tester le frontend
       - name: Run frontend tests
         run: npm run test:ci
         working-directory: front
 
-      # Étape 8 : Compiler et tester le backend
-      - name: Build and test using Maven
-        run: mvn --batch-mode --update-snapshots clean package
-        working-directory: back
-
-      # Étape 9 : Utiliser le cache de SonarQube
+      # Étape 6 : Utiliser le cache de SonarQube
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
@@ -86,31 +68,61 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      # Étape 10 : Analyser le code avec SonarQube
+      # Étape 7 : Analyser le code avec SonarQube
       - name: Build and analyze with SonarQube
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
+          projectBaseDir: front
           args: >
-            --define sonar.qualitygate.wait=true
+            --define sonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             --define sonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
             --define sonar.host.url=${{ secrets.SONAR_HOST_URL }}
+            --define sonar.qualitygate.wait=true
 
-
+      # Étape 8 : Attendre les résultats de l'analyse
       - name: Wait for the quality gate result
         run: sleep 5
 
+      # Étape 9 : Vérifier le statut de la qualité du code
       - uses: phwt/sonarqube-quality-gate-action@v1
-        id: quality-gate-check
+        id: quality-gate-check-pull-request
+        if: ${{ github.event_name == 'pull_request' }}
+        name: Check Backend SonarQube Quality Gate on Pull Request
         with:
+          fail-on-quality-gate-error: true
+          pull-request: ${{ github.event.pull_request.number }}
           sonar-project-key: ${{ secrets.SONAR_PROJECT_KEY }}
           sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Output analysis result
+      # Étape 10 : Vérifier le statut de la qualité du code
+      - uses: phwt/sonarqube-quality-gate-action@v1
+        id: quality-gate-check-branch
+        if: ${{ github.event_name != 'pull_request' }}
+        name: Check Backend SonarQube Quality Gate on Branch
+        with:
+          branch: ${{ github.ref_name }}
+          fail-on-quality-gate-error: true
+          sonar-project-key: ${{ secrets.SONAR_PROJECT_KEY }}
+          sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Étape 11 : Afficher le résultat de l'analyse sur une pull request
+      - name: Output pull request analysis result
+        if: ${{ steps.quality-gate-check-pull-request.conclusion == 'success' }}
         run: |
-          echo "${{ steps.quality-gate-check.outputs.project-status }}"
-          echo "${{ steps.quality-gate-check.outputs.quality-gate-result }}"
+          echo "${{ steps.quality-gate-check-pull-request.outputs.project-status }}"
+          echo "${{ steps.quality-gate-check-pull-request.outputs.quality-gate-result }}"
+
+      # Étape 12 : Afficher le résultat de l'analyse sur une branche
+      - name: Output branch analysis result
+        if: ${{ steps.quality-gate-check-branch.conclusion == 'success' }}
+        run: |
+          echo "${{ steps.quality-gate-check-branch.outputs.project-status }}"
+          echo "${{ steps.quality-gate-check-branch.outputs.quality-gate-result }}"
+
