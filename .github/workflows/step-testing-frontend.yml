@@ -1,0 +1,88 @@
+# Ce fichier est un workflow GitHub Actions qui exécute les tests du frontend
+#
+# Il est déclenché par un autre workflow (workflow_call) et
+# utilise le cache GitHub Actions pour optimiser le processus de test
+#
+# Jobs :
+# - test-frontend : exécute les tests du frontend
+#
+
+name: Testing Frontend
+
+# Ce workflow est déclenché lorsqu'il est appelé par un autre workflow
+on:
+  workflow_call:
+
+# Définition des jobs à exécuter dans ce workflow
+jobs:
+
+  # Exécute les tests du frontend
+  test-frontend:
+    name: Frontend tests and coverage
+    # S'exécute sur un runner avec une version d'Ubuntu récente
+    runs-on: ubuntu-latest
+
+    # Défini la sortie du job pour pouvoir l'utiliser dans d'autres jobs
+    outputs:
+      front-report-url: ${{ steps.test-report-frontend.outputs.runHtmlUrl }}
+
+    # Défini des paramètres par défaut pour les étapes de ce job
+    defaults:
+      run:
+        working-directory: front
+
+    # Étapes de ce job
+    steps:
+
+      # Étape 1 : Récupérer le code du dépôt avec Git
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Récupère seulement le dernier commit
+          fetch-depth: 1
+
+      # Étape 2 : Installer Node.js 18 et récupérer le cache de npm
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'front/package-lock.json'
+
+      # Étape 3 : Installer les dépendances du projet
+      - name: Npm install dependencies
+        run: npm ci
+
+      # Étape 4 : Tester le projet
+      - name: Run project tests
+        run: npm run test:ci
+
+      # Étape 5 : Envoyer le rapport de couverture
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: karma-report
+          path: front/coverage
+
+      # Étape 6 : Générer le rapport de test Github
+      - name: Generate Github Test Report
+        uses: phoenix-actions/test-reporting@v15
+        # ID de l'étape pour pouvoir l'utiliser dans d'autres jobs
+        # et pour pouvoir lire les variables de sortie
+        id: test-report-frontend
+        # Exécuter cette étape même si les tests échouent
+        # pour pouvoir générer le rapport de test
+        # et l'envoyer à Github
+        if: success() || failure()
+        with:
+          # Le nom du rapport qui sera affiché dans Github
+          name: Frontend Tests Report
+          # Chemin vers les rapports de test à utiliser
+          path: front/coverage/**/junit.xml
+          # Format du rapport de test à utiliser
+          reporter: java-junit
+
+      # Étape 7 : Lire les variables de sortie
+      - name: Print frontend report URL
+        run: |
+          echo "url is ${{ steps.test-report-frontend.outputs.runHtmlUrl }}"

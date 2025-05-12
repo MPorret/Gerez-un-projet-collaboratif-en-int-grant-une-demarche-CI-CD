@@ -12,8 +12,10 @@
 # - Le secret SONAR_TOKEN est requis pour l'authentification avec SonarQube
 #
 # Jobs :
-# - testing : exécute les tests du backend et du frontend
-# - analysis : effectue une analyse de code avec SonarQube
+# - testing-frontend : exécute les tests du frontend
+# - testing-backend : exécute les tests du backend
+# - analysis-backend : effectue une analyse du code du backend avec SonarQube
+# - analysis-frontend : effectue une analyse du code du frontend avec SonarQube
 # - docker-images : construit et pousse les images Docker du backend et du frontend
 #
 
@@ -41,23 +43,48 @@ on:
 jobs:
 
   # Exécute les tests du backend et du frontend
-  testing:
-    name: Testing
-    uses: ./.github/workflows/step-testing.yml
+  testing-frontend:
+    name: Testing Frontend
+    # S'exécute sans dépendance
+    if: ${{ success() }}
+    uses: ./.github/workflows/step-testing-frontend.yml
+
+  # Exécute les tests du backend et du frontend
+  testing-backend:
+    name: Testing Backend
+    # S'exécute sans dépendance
+    if: ${{ success() }}
+    uses: ./.github/workflows/step-testing-backend.yml
 
 
-  # Analyse le code avec SonarQube
-  analysis:
-    name: Analysis
-    # Se déclenche toujours, même si le job précédent échoue
-    if: ${{ always() }}
-    # Requiert que le job de test soit terminé
+  # Analyse le code du frontend avec SonarQube
+  analysis-frontend:
+    name: Analysis Frontend
+    # S'exécute sans dépendance
+    if: ${{ success() }}
+    # Requiert que le job de test du frontend soit terminé avec succès
     needs:
-      - testing
-    uses: ./.github/workflows/step-analysis.yml
+      - testing-frontend
+    uses: ./.github/workflows/step-analysis-frontend.yml
     secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+      SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY_FRONTEND }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  # Analyse le code du backend avec SonarQube
+  analysis-backend:
+    name: Analysis Backend
+    # S'exécute sans dépendance
+    if: ${{ success() }}
+    # Requiert que le job de test du backend soit terminé avec succès
+    needs:
+      - testing-backend
+    uses: ./.github/workflows/step-analysis-backend.yml
+    secrets:
+      SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY_BACKEND }}
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
 
@@ -70,8 +97,10 @@ jobs:
     # Requiert que le job de test et d'analyse soient terminés
     # avec succès avant de commencer
     needs:
-      - testing
-      - analysis
+      - testing-frontend
+      - testing-backend
+      - analysis-frontend
+      - analysis-backend
     # Utilise le workflow de construction et de publication d'images Docker
     uses: ./.github/workflows/step-docker-images.yml
     with:

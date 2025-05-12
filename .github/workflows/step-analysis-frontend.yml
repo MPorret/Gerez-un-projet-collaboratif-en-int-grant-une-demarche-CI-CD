@@ -1,0 +1,106 @@
+name: SonarQube Analysis
+
+# Ce workflow est déclenché lorsqu'il est appelé par un autre workflow
+on:
+  workflow_call:
+    # Secrets pour le workflow
+    secrets:
+      SONAR_ORGANIZATION:
+        required: true
+        description: 'SonarQube organization'
+      SONAR_TOKEN:
+        required: true
+        description: 'SonarQube token'
+      SONAR_HOST_URL:
+        required: true
+        description: 'SonarQube server URL'
+      SONAR_PROJECT_KEY:
+        required: true
+        description: 'SonarQube project key'
+
+# Définition des jobs à exécuter dans ce workflow
+jobs:
+
+  # Exécute l'analyse du projet avec SonarQube
+  analysis:
+    name: Projet Analysis with SonarQube
+    # S'exécute sur un runner avec une version d'Ubuntu récente
+    runs-on: ubuntu-latest
+
+    # Étapes de ce job
+    steps:
+
+      # Étape 1 : Récupérer le code du dépôt avec Git
+      - uses: actions/checkout@v4
+        with:
+          # Récupère le code du dépôt avec l'historique complet
+          # pour une meilleure pertinence de l'analyse
+          fetch-depth: 0
+
+      # Étape 2 : Installer Node.js 18 et récupérer le cache de npm
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'front/package-lock.json'
+
+      # Étape 3 : Installer les dépendances du projet
+      - name: Npm install dependencies
+        run: npm ci
+        working-directory: front
+
+      # Étape 4 : Compiler le frontend
+      - name: Build frontend
+        run: npm run build
+        working-directory: front
+
+      # Étape 5 : Tester le frontend
+      - name: Run frontend tests
+        run: npm run test:ci
+        working-directory: front
+
+      # Étape 6 : Utiliser le cache de SonarQube
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      # Étape 7 : Analyser le code avec SonarQube
+      - name: Build and analyze with SonarQube
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            --define sonar.qualitygate.wait=true
+            --define sonar.projectOrganization=${{ secrets.SONAR_ORGANIZATION }}
+            --define sonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            --define sonar.host.url=${{ secrets.SONAR_HOST_URL }}
+
+      # Étape 8 : Attendre les résultats de l'analyse
+      - name: Wait for the quality gate result
+        run: sleep 5
+
+      # Étape 9 : Vérifier le statut de la qualité du code
+      - uses: phwt/sonarqube-quality-gate-action@v1
+        id: quality-gate-check
+        if: ${{ github.event_name == 'pull_request' }}
+        name: Check Frontend SonarQube Quality Gate
+        with:
+          branch: ${{ github.ref_name }}
+          fail-on-quality-gate-error: true
+          pull-request: ${{ github.event.pull_request.number }}
+          sonar-project-key: ${{ secrets.SONAR_PROJECT_KEY }}
+          sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Étape 10 : Afficher le résultat de l'analyse
+      - name: Output analysis result
+        run: |
+          echo "${{ steps.quality-gate-check.outputs.project-status }}"
+          echo "${{ steps.quality-gate-check.outputs.quality-gate-result }}"
