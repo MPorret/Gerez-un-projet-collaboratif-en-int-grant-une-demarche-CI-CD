@@ -1,71 +1,105 @@
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD)
-
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD)](https://sonarcloud.io/summary/new_code?id=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD)
-
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD&metric=bugs)](https://sonarcloud.io/summary/new_code?id=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD)
-
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD)
-
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD)
-
-[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=Kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD)
-
-[![Frontend Testing](https://github.com/Kwaadpepper/Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD/actions/workflows/frontend-tests-coverage.yml/badge.svg)](https://github.com/Kwaadpepper/Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD/actions/workflows/frontend-tests-coverage.yml)
-
 # BobApp
+
+## Quality status
+
+| Frontend                                                                                                                                                                                                                                                                                                              | Backend                                                                                                                                                                                                                                                                                                             |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Frontend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Frontend) | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Backend) |
+| [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Frontend)](https://sonarcloud.io/summary/new_code?id=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Frontend)                       | [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Backend)](https://sonarcloud.io/summary/new_code?id=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Backend)                       |
+| [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Backend&metric=bugs)](https://sonarcloud.io/summary/new_code?id=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Backend)                          | [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Frontend&metric=bugs)](https://sonarcloud.io/summary/new_code?id=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Frontend)                      |
+| [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Backend&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Backend)            | [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Frontend&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Frontend)        |
+| [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Backend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Backend)                  | [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Frontend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=kwaadpepper_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD-Frontend)              |
+
+## Installation
 
 Clone project:
 
-> git clone XXXXX
+```sh
+git clone https://github.com/Kwaadpepper/Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD.git
+```
 
-## Front-end 
+## Front-end
 
 Go inside folder the front folder:
 
-> cd front
+```sh
+cd front
+```
 
 Install dependencies:
 
-> npm install
+```sh
+npm install
+```
 
 Launch Front-end:
 
-> npm run start;
-
-### Docker
-
-Build the container:
-
-> docker build -t bobapp-front .  
-
-Start the container:
-
-> docker run -p 8080:8080 --name bobapp-front -d bobapp-front
+```sh
+npm run start
+```
 
 ## Back-end
 
 Go inside folder the back folder:
 
-> cd back
+```sh
+cd back
+```
 
 Install dependencies:
 
-> mvn clean install
+```sh
+mvn clean install
+```
 
 Launch Back-end:
 
->  mvn spring-boot:run
+```sh
+mvn spring-boot:run
+```
 
 Launch the tests:
 
-> mvn clean install
+```sh
+mvn clean install
+```
 
-### Docker
+## Run with Docker
+
+### Create the network
+
+```sh
+docker network create bobapp
+```
+
+This network should host both backend and frontend.
+
+### Frontend
 
 Build the container:
 
-> docker build -t bobapp-back .  
+```sh
+docker build -t bobapp-front .
+```
 
 Start the container:
 
-> docker run -p 8080:8080 --name bobapp-back -d bobapp-back 
+```sh
+docker run --network bobapp -p 8081:80 --name bobapp-front -d bobapp-front
+```
+
+*NOTE*: `bobapp-back` is mentioned in `/front/nginx.conf` as proxy pass. So you should change this or make sure the backend container is run with the `--name bobapp-back` option and that both are running with the `--network bobapp` option.
+
+### Backend
+
+Build the container:
+
+```sh
+docker build -t bobapp-back .
+```
+
+Start the container:
+
+```sh
+docker run --network bobapp -p 8080:8080 --name bobapp-back -d bobapp-back
+```
