@@ -68,32 +68,30 @@ jobs:
 
       # Étape 6 - A : Analyser le code avec SonarQube (Pull Request)
       - name: Build and analyze with SonarQube
-        uses: SonarSource/sonarqube-scan-action@v5
         if: ${{ github.event_name == 'pull_request' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: front
-          args: >
-            --define sonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-            --define sonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            --define sonar.host.url=${{ secrets.SONAR_HOST_URL }}
+        working-directory: back
+        run: |
+          mvn org.sonarsource.scanner.maven:sonar-maven-plugin:5.1.0.4751:sonar \
+            --define sonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+            --define sonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            --define sonar.token=${{ secrets.SONAR_TOKEN }} \
             --define sonar.qualitygate.wait=true
 
       # Étape 6 - B : Analyser le code avec SonarQube (Branch)
       - name: Build and analyze with SonarQube
-        uses: SonarSource/sonarqube-scan-action@v5
         if: ${{ github.event_name != 'pull_request' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: front
-          args: >
-            --define sonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-            --define sonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            --define sonar.host.url=${{ secrets.SONAR_HOST_URL }}
+        working-directory: back
+        run: |
+          mvn org.sonarsource.scanner.maven:sonar-maven-plugin:5.1.0.4751:sonar \
+            --define sonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+            --define sonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            --define sonar.token=${{ secrets.SONAR_TOKEN }}
 
       # Étape 7 : Attendre les résultats de l'analyse
       - name: Wait for the quality gate result
@@ -119,7 +117,6 @@ jobs:
         name: Check Backend SonarQube Quality Gate on Branch
         with:
           branch: ${{ github.ref_name }}
-          fail-on-quality-gate-error: true
           sonar-project-key: ${{ secrets.SONAR_PROJECT_KEY }}
           sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}

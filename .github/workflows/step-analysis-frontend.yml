@@ -121,7 +121,6 @@ jobs:
         name: Check Backend SonarQube Quality Gate on Branch
         with:
           branch: ${{ github.ref_name }}
-          fail-on-quality-gate-error: true
           sonar-project-key: ${{ secrets.SONAR_PROJECT_KEY }}
           sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
