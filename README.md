@@ -1,58 +1,67 @@
 # BobApp
 
-Clone project:
+Welcome to **BobApp**, a full-stack application divided into two core parts:
+- An Angular-based front-end
+- A Spring Boot-based back-end
 
-> git clone XXXXX
+This project integrates Docker for containerization and GitHub Actions for CI/CD automation.
 
-## Front-end 
+---
 
-Go inside folder the front folder:
+## 🧰 Prerequisites
 
-> cd front
+### 🖥️ Front-End
+- Angular
+- Node.js & npm
 
-Install dependencies:
+### 🖥️ Back-End
+- Java 17
+- Spring Boot
+- Maven
 
-> npm install
+### 🚀 Front-end 
 
-Launch Front-end:
+1. Navigate to the front-end folder:
+```bash
+cd front
+```
 
-> npm run start;
+2. Install dependencies:
+```bash
+npm install
+```
 
-### Docker
+3. Run the development server:
+```bash
+npm run start
+```
 
-Build the container:
+### 🚀 Back-End Setup
 
-> docker build -t bobapp-front .  
+1. Navigate to the back-end folder:
+```bash
+cd back
+```
 
-Start the container:
+2. Build and run:
+```bash
+mvn clean install
+mvn spring-boot:run
+```
 
-> docker run -p 8080:8080 --name bobapp-front -d bobapp-front
+### 🐳 Docker
 
-## Back-end
+#### 🔄 Pull the latest images (if needed)
 
-Go inside folder the back folder:
+```bash
+docker pull hoaktuah/bobapp-back
+docker pull hoaktuah/bobapp-front
+```
 
-> cd back
+#### 🚀 Launch containers using Docker Compose
 
-Install dependencies:
+```bash
+docker-compose up -d
+```
 
-> mvn clean install
-
-Launch Back-end:
-
->  mvn spring-boot:run
-
-Launch the tests:
-
-> mvn clean install
-
-### Docker
-
-Build the container:
-
-> docker build -t bobapp-back .  
-
-Start the container:
-
-> docker run -p 8080:8080 --name bobapp-back -d bobapp-back 
-
+✅ Access the application: [http://localhost](http://localhost)
