@@ -66,7 +66,12 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      # Étape 6 - A : Analyser le code avec SonarQube (Pull Request)
+      # Étape 6 : Compiler et tester le backend
+      - name: Build and test using Maven
+        run: mvn org.owasp:dependency-check-maven:7.0.4:check -Dformats=json
+        working-directory: back
+
+      # Étape 7 - A : Analyser le code avec SonarQube (Pull Request)
       - name: Build and analyze with SonarQube
         if: ${{ github.event_name == 'pull_request' || github.base_ref == 'refs/heads/release' }}
         env:
@@ -80,7 +85,7 @@ jobs:
             --define sonar.token=${{ secrets.SONAR_TOKEN }} \
             --define sonar.qualitygate.wait=true
 
-      # Étape 6 - B : Analyser le code avec SonarQube (Branch)
+      # Étape 7 - B : Analyser le code avec SonarQube (Branch)
       - name: Build and analyze with SonarQube
         if: ${{ github.event_name != 'pull_request' && github.base_ref != 'refs/heads/release' }}
         env:
