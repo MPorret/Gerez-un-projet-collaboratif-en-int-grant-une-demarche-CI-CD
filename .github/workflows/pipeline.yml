@@ -7,6 +7,10 @@
 # et que la branche est main, staging ou release.
 # Les images Docker sont taguées avec le nom de la branche ou 'latest' si la branche est 'release'.
 #
+# Les quality gate de sonar sont vérifiés avant de pousser les images Docker.
+# Elles sont configurées pour échouer si le code n'est pas conforme aux règles de qualité définies
+# et qu'il s'agit de la branche release ou d'une pull request.
+#
 # Paramètres :
 # - Les secrets DOCKERHUB_TOKEN et DOCKERHUB_USERNAME sont requis pour l'authentification avec Docker Hub
 # - Le secret SONAR_TOKEN est requis pour l'authentification avec SonarQube
