@@ -23,7 +23,7 @@
 # - docker-images : construit et pousse les images Docker du backend et du frontend
 #
 
-name: Continuous Integration and Deployment
+name: Continuous Integration
 
 on:
   # Déclenche le workflow sur les événements de push et de pull request
