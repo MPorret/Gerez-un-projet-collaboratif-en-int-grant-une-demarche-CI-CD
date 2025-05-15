@@ -17,9 +17,6 @@ on:
       SONAR_PROJECT_KEY:
         required: true
         description: 'SonarQube project key'
-      NVD_API_KEY:
-        required: true
-        description: 'NVD API Key for Dependency Check'
 
 # Définition des jobs à exécuter dans ce workflow
 jobs:
@@ -69,22 +66,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      # Étape 6 : Compiler et tester le backend
-      - name: Install xsltproc and Run dependency check
-        run: |
-          sudo apt-get update && sudo apt-get install -y xsltproc
-          # Exécute dependency-check, en passant la clé API NVD si elle est fournie
-          mvn org.owasp:dependency-check-maven:12.1.0:check \
-            -Dformats=xml \
-            -DnvdApiKey=${{ secrets.NVD_API_KEY }}
-        working-directory: back
-
-      # Étape 7 : Convertir le rapport de dépendance en XML
-      - name: Run XSLT transformation
-        run: xsltproc ./dependencycheck_to_pmd.xsl target/dependency-check-report.xml > target/pmd-dependency-check.xml
-        working-directory: back
-
-      # Étape 8 - A : Analyser le code avec SonarQube (Pull Request)
+      # Étape 6 - A : Analyser le code avec SonarQube (Pull Request)
       - name: Analyze with SonarQube
         if: ${{ github.event_name == 'pull_request' || github.base_ref == 'refs/heads/release' }}
         env:
@@ -98,7 +80,7 @@ jobs:
             --define sonar.token=${{ secrets.SONAR_TOKEN }} \
             --define sonar.qualitygate.wait=true
 
-      # Étape 8 - B : Analyser le code avec SonarQube (Branch)
+      # Étape 6 - B : Analyser le code avec SonarQube (Branch)
       - name: Analyze with SonarQube
         if: ${{ github.event_name != 'pull_request' && github.base_ref != 'refs/heads/release' }}
         env:

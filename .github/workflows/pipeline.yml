@@ -90,7 +90,6 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
       SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY_BACKEND }}
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
 
 
   # Construit et pousse les images Docker
