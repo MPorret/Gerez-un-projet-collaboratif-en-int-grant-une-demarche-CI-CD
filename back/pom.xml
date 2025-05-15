@@ -18,7 +18,7 @@
 		<sonar.organization>kwaadpepper</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.projectName>Bob App Backend</sonar.projectName>
-		<sonar.dependencyCheck.xmlReportPath>target/pmd-dependency-check.xml</sonar.dependencyCheck.xmlReportPath>
+		<sonar.java.pmd.reportPaths>target/pmd-dependency-check.xml</sonar.java.pmd.reportPaths>
 		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 	</properties>
 	<dependencies>
