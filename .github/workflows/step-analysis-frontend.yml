@@ -23,7 +23,7 @@ jobs:
 
   # Exécute l'analyse du projet avec SonarQube
   analysis:
-    name: Projet Analysis with SonarQube
+    name: Frontend Analysis with SonarQube
     # S'exécute sur un runner avec une version d'Ubuntu récente
     runs-on: ubuntu-latest
 

@@ -67,11 +67,18 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
 
       # Étape 6 : Compiler et tester le backend
+      - name: Install xsltproc
+        run: sudo apt-get update && sudo apt-get install -y xsltproc
       - name: Run dependency check
-        run: mvn org.owasp:dependency-check-maven:7.0.4:check -Dformats=json
+        run: mvn org.owasp:dependency-check-maven:12.1.0:check -Dformats=xml
         working-directory: back
 
-      # Étape 7 - A : Analyser le code avec SonarQube (Pull Request)
+      # Étape 7 : Convertir le rapport de dépendance en XML
+      - name: Run XSLT transformation
+        run: xsltproc ./dependencycheck_to_pmd.xsl target/dependency-check-report.xml > target/pmd-dependency-check.xml
+        working-directory: back
+
+      # Étape 8 - A : Analyser le code avec SonarQube (Pull Request)
       - name: Analyze with SonarQube
         if: ${{ github.event_name == 'pull_request' || github.base_ref == 'refs/heads/release' }}
         env:
@@ -85,7 +92,7 @@ jobs:
             --define sonar.token=${{ secrets.SONAR_TOKEN }} \
             --define sonar.qualitygate.wait=true
 
-      # Étape 7 - B : Analyser le code avec SonarQube (Branch)
+      # Étape 8 - B : Analyser le code avec SonarQube (Branch)
       - name: Analyze with SonarQube
         if: ${{ github.event_name != 'pull_request' && github.base_ref != 'refs/heads/release' }}
         env:
