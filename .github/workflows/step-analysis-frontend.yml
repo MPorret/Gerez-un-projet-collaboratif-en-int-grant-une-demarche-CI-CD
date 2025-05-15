@@ -69,7 +69,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
 
       # Étape 7 - A : Analyser le code avec SonarQube (Pull Request)
-      - name: Build and analyze with SonarQube
+      - name: Analyze with SonarQube
         uses: SonarSource/sonarqube-scan-action@v5
         if: ${{ github.event_name == 'pull_request' || github.base_ref == 'refs/heads/release' }}
         env:
@@ -84,7 +84,7 @@ jobs:
             --define sonar.qualitygate.wait=true
 
       # Étape 7 - B : Analyser le code avec SonarQube (Branch)
-      - name: Build and analyze with SonarQube
+      - name: Analyze with SonarQube
         uses: SonarSource/sonarqube-scan-action@v5
         if: ${{ github.event_name != 'pull_request' && github.base_ref != 'refs/heads/release' }}
         env:
