@@ -66,6 +66,8 @@ mvn clean install
 
 ## Run with Docker
 
+*Important :* The backend should be started before the front for the nginx `proxypass` to succeed.
+
 ### Create the network
 
 ```sh
@@ -74,32 +76,50 @@ docker network create bobapp
 
 This network should host both backend and frontend.
 
-### Frontend
-
-Build the container:
-
-```sh
-docker build -t bobapp-front .
-```
-
-Start the container:
-
-```sh
-docker run --network bobapp -p 8081:80 --name bobapp-front -d bobapp-front
-```
-
-*NOTE*: `bobapp-back` is mentioned in `/front/nginx.conf` as proxy pass. So you should change this or make sure the backend container is run with the `--name bobapp-back` option and that both are running with the `--network bobapp` option.
-
 ### Backend
 
-Build the container:
+Either
+
+#### Run directly the container
+
+```sh
+docker run --network bobapp -p 8080:8080 --name bobapp-back juniko/bobapp-back:latest
+```
+
+Or
+
+#### Build the backend container
 
 ```sh
 docker build -t bobapp-back .
 ```
 
-Start the container:
+#### Start the backend container
 
 ```sh
 docker run --network bobapp -p 8080:8080 --name bobapp-back -d bobapp-back
 ```
+
+### Frontend
+
+Either
+
+```sh
+docker run --network bobapp -p 8081:80 --name bobapp-front juniko/bobapp-front:latest
+```
+
+Or
+
+#### Build the frontend container
+
+```sh
+docker build -t bobapp-front .
+```
+
+#### Start the frontend container
+
+```sh
+docker run --network bobapp -p 8081:80 --name bobapp-front -d bobapp-front
+```
+
+**NOTE**: `bobapp-back` is mentioned in `/front/nginx.conf` as proxy pass. So you should change this or make sure the backend container is run with the `--name bobapp-back` option and that both are running with the `--network bobapp` option.
