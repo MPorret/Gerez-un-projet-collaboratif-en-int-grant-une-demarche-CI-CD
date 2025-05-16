@@ -26,11 +26,6 @@ jobs:
     outputs:
       front-report-url: ${{ steps.test-report-frontend.outputs.runHtmlUrl }}
 
-    # Défini des paramètres par défaut pour les étapes de ce job
-    defaults:
-      run:
-        working-directory: front
-
     # Étapes de ce job
     steps:
 
@@ -51,11 +46,13 @@ jobs:
 
       # Étape 3 : Installer les dépendances du projet
       - name: Npm install dependencies
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit --progress=false
+        working-directory: front
 
       # Étape 4 : Tester le projet
       - name: Run project tests
         run: npm run test:ci
+        working-directory: front
 
       # Étape 5 : Envoyer le rapport de couverture
       - name: Upload coverage report

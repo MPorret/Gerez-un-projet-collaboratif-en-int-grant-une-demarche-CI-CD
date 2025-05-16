@@ -1,0 +1,78 @@
+# Ce fichier est un workflow GitHub Actions qui exécute le lint du backend avec checkstyle
+#
+# Il est déclenché par un autre workflow (workflow_call) et
+# utilise le cache GitHub Actions pour optimiser le processus
+#
+# Jobs :
+# - lint-backend : exécute le lint du backend
+#
+
+name: Linting Backend
+
+# Ce workflow est déclenché lorsqu'il est appelé par un autre workflow
+on:
+  workflow_call:
+
+# Définition des jobs à exécuter dans ce workflow
+jobs:
+
+  # Exécute le lint du backend
+  lint-backend:
+    name: Backend linting
+    # S'exécute sur un runner avec une version d'Ubuntu récente
+    runs-on: ubuntu-latest
+
+    # Défini des paramètres par défaut pour les étapes de ce job
+    defaults:
+      run:
+        working-directory: back
+
+    # Étapes de ce job
+    steps:
+
+      # Étape 1 : Récupérer le code du dépôt avec Git
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Récupère seulement le dernier commit
+          fetch-depth: 1
+
+      # Étape 2 : Récupérer le cache de Maven
+      - name: Setup Maven packages cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      # Étape 3 : Installer Java 11
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          architecture: x64
+
+      # Étape 4 : Exécuter le lint avec Checkstyle
+      - name: Run Checkstyle (Fail on violations)
+        run: mvn checkstyle:check
+
+      # Étape 5 : Générer le rapport Checkstyle
+      - name: Generate Checkstyle Report
+        run: mvn checkstyle:checkstyle
+
+      # Étape 6 : Envoyer le resultat Checkstyle
+      - name: Upload Checkstyle Result
+        uses: actions/upload-artifact@v4
+        with:
+          # Nom de l'artefact qui sera créé
+          name: checkstyle-result
+          path: back/target/checkstyle-result.xml
+
+      # Étape 7 : Envoyer le rapport Checkstyle
+      - name: Upload Checkstyle Report
+        uses: actions/upload-artifact@v4
+        with:
+          # Nom de l'artefact qui sera créé
+          name: checkstyle-report
+          path: back/target/reports/*

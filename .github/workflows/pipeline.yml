@@ -53,12 +53,22 @@ on:
 # Définition des jobs à exécuter dans ce workflow
 jobs:
 
-  # Exécute les tests du backend et du frontend
+  # Exécute le lint du frontend
+  linting-frontend:
+    name: Linting Frontend
+    uses: ./.github/workflows/step-linting-frontend.yml
+
+  # Exécute le lint du backend
+  linting-backend:
+    name: Linting Backend
+    uses: ./.github/workflows/step-linting-backend.yml
+
+  # Exécute les tests du frontend
   testing-frontend:
     name: Testing Frontend
     uses: ./.github/workflows/step-testing-frontend.yml
 
-  # Exécute les tests du backend et du frontend
+  # Exécute les tests du backend
   testing-backend:
     name: Testing Backend
     uses: ./.github/workflows/step-testing-backend.yml
@@ -69,6 +79,7 @@ jobs:
     name: Analysis Frontend
     # Requiert que le job de test du frontend soit terminé avec succès
     needs:
+      - linting-frontend
       - testing-frontend
     uses: ./.github/workflows/step-analysis-frontend.yml
     secrets:
@@ -82,6 +93,7 @@ jobs:
     name: Analysis Backend
     # Requiert que le job de test du backend soit terminé avec succès
     needs:
+      - linting-backend
       - testing-backend
     uses: ./.github/workflows/step-analysis-backend.yml
     secrets:

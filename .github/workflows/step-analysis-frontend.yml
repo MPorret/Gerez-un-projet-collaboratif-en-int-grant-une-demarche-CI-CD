@@ -47,7 +47,7 @@ jobs:
 
       # Étape 3 : Installer les dépendances du projet
       - name: Npm install dependencies
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit --progress=false
         working-directory: front
 
       # Étape 4 : Compiler le frontend

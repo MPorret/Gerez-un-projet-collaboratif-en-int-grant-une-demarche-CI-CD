@@ -9,7 +9,8 @@
     "test": "ng test",
     "test:ci": "ng test --watch=false --browsers=ChromeHeadless --no-progress --code-coverage",
     "sonar-scanner": "sonar-scanner",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "lint:ci": "ng lint --format json --output-file reports/eslint_report.json"
   },
   "private": true,
   "dependencies": {
@@ -44,6 +45,6 @@
     "karma-sonarqube-reporter": "^1.4.0",
     "sonarqube-scanner": "^4.3.0",
     "typescript": "^4.8.4",
-    "typescript-eslint": "8.32.0"
+    "typescript-eslint": "^8.32.1"
   }
 }
