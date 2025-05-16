@@ -1,11 +1,13 @@
 # Ce workflow est déclenché par des événements de push ou de pull request
-# sur les branches main, staging et release.
+# sur les branches main, staging et release ainsi que sur les tags.
 # Il peut également être déclenché manuellement via l'interface de GitHub.
 #
 # Les jobs de test et d'analyse sont toujours exécutés, même si les tests échouent
 # Les images Docker ne sont construites et poussées que si les tests et l'analyse réussissent
-# et que la branche est main, staging ou release.
-# Les images Docker sont taguées avec le nom de la branche ou 'latest' si la branche est 'release'.
+# et que la branche est staging ou release ou si c'est un tag.
+# Elles sont construites à partir du code du dépôt, poussées vers Docker Hub,
+# et sont taguées avec le nom de la branche, 'latest' si la branche est 'release'
+# ou avec le nom du tag si c'est un tag.
 #
 # Les quality gate de sonar sont vérifiés avant de pousser les images Docker.
 # Elles sont configurées pour échouer si le code n'est pas conforme aux règles de qualité définies
@@ -28,7 +30,12 @@ name: Continuous Integration
 on:
   # Déclenche le workflow sur les événements de push et de pull request
   # sur les branches main, staging et release
+  # sur les tags de type vX.Y.Z
+  # et sur les tags pre-release (vX.Y.Z-rc.N, etc.)
   push:
+    tags:
+      - 'v*.*.*' # Déclenche le workflow sur les tags de type vX.Y.Z
+      - 'v*.*.*-*' # Déclenche le workflow sur les tags pre-release (vX.Y.Z-rc.N, etc.)
     branches:
       - main
       - staging
@@ -49,23 +56,17 @@ jobs:
   # Exécute les tests du backend et du frontend
   testing-frontend:
     name: Testing Frontend
-    # S'exécute sans dépendance
-    if: ${{ success() }}
     uses: ./.github/workflows/step-testing-frontend.yml
 
   # Exécute les tests du backend et du frontend
   testing-backend:
     name: Testing Backend
-    # S'exécute sans dépendance
-    if: ${{ success() }}
     uses: ./.github/workflows/step-testing-backend.yml
 
 
   # Analyse le code du frontend avec SonarQube
   analysis-frontend:
     name: Analysis Frontend
-    # S'exécute sans dépendance
-    if: ${{ success() }}
     # Requiert que le job de test du frontend soit terminé avec succès
     needs:
       - testing-frontend
@@ -79,8 +80,6 @@ jobs:
   # Analyse le code du backend avec SonarQube
   analysis-backend:
     name: Analysis Backend
-    # S'exécute sans dépendance
-    if: ${{ success() }}
     # Requiert que le job de test du backend soit terminé avec succès
     needs:
       - testing-backend
@@ -96,8 +95,8 @@ jobs:
   docker-images:
     name: Docker Images
     # Se déclenche que si le job de test et d'analyse réussissent
-    # et que la branche est main, staging ou release
-    if: ${{ success() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/release') }}
+    # et que la branche est staging ou release, ou si c'est un tag
+    if: ${{ startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/release' }}
     # Requiert que le job de test et d'analyse soient terminés
     # avec succès avant de commencer
     needs:
@@ -110,8 +109,11 @@ jobs:
     with:
       # Tag de l'image à pousser
       # Si la branche est 'release', on tag l'image avec 'latest'
-      # Sinon, on utilise le nom de la branche
-      tag: ${{ github.ref == 'refs/heads/release' && 'latest' || github.ref_name }}
+      # Sinon, on utilise le nom de la branche ou le nom du tag
+      tag: >
+        ${{ startsWith(github.ref, 'refs/heads/release') && 'latest' ||
+            startsWith(github.ref, 'refs/tags/') && github.ref_name ||
+            github.ref_name }}
     secrets:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
