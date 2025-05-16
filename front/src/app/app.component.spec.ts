@@ -1,7 +1,7 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import {JokesService} from "./services/jokes.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import { JokesService } from './services/jokes.service';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
