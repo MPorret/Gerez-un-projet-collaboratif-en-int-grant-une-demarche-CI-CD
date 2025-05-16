@@ -42,7 +42,7 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: 'front/package-lock.json'
+          cache-dependency-path: '**/package-lock.json'
 
       # Étape 3 : Installer les dépendances du projet
       - name: Npm install dependencies

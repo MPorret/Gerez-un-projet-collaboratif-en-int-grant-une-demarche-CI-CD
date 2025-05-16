@@ -28,13 +28,17 @@
     "tslib": "2.4.0",
     "zone.js": "0.11.8"
   },
+  "overrides": {
+    "chokidar": "4.0.3",
+    "readdirp": "4.1.2"
+  },
   "devDependencies": {
     "@angular-devkit/build-angular": "14.2.1",
     "@angular/cli": "14.2.1",
     "@angular/compiler-cli": "14.2.0",
     "@types/jasmine": "4.3.0",
-    "angular-eslint": "19.4.0",
-    "eslint": "^9.26.0",
+    "angular-eslint": "^19.4.0",
+    "eslint": "^9.27.0",
     "jasmine-core": "4.4.0",
     "karma": "6.4.0",
     "karma-chrome-launcher": "3.1.1",
