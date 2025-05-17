@@ -1,57 +1,110 @@
 # BobApp
 
-Clone project:
+Welcome to **BobApp**, a full-stack application divided into two core parts:
+- An Angular-based front-end
+- A Spring Boot-based back-end
 
-> git clone XXXXX
+This project integrates Docker for containerization and GitHub Actions for CI/CD automation.
 
-## Front-end 
+---
 
-Go inside folder the front folder:
+## 🧰 Prerequisites
 
-> cd front
+### 🖥️ Front-End
+- Angular
+- Node.js & npm
 
-Install dependencies:
+### 🖥️ Back-End
+- Java 17
+- Spring Boot
+- Maven
 
-> npm install
+### 🚀 Front-end  
 
-Launch Front-end:
+1. Navigate to the front-end folder:
+```bash
+cd front
+```
 
-> npm run start;
+2. Install dependencies:
+```bash
+npm install
+```
 
-### Docker
+3. Run the development server:
+```bash
+npm run start
+```
 
-Build the container:
+### 🚀 Back-End Setup
 
-> docker build -t bobapp-front .  
+1. Navigate to the back-end folder:
+```bash
+cd back
+```
 
-Start the container:
+2. Build and run:
+```bash
+mvn clean install
+mvn spring-boot:run
+```
 
-> docker run -p 8080:8080 --name bobapp-front -d bobapp-front
+### 🐳 Docker
 
-## Back-end
+#### 🔄 Pull the latest images (if needed)
 
-Go inside folder the back folder:
+```bash
+docker pull hoaktuah/bobapp-back
+docker pull hoaktuah/bobapp-front
+```
 
-> cd back
+#### 🚀 Launch containers using Docker Compose
 
-Install dependencies:
+```bash
+docker-compose up -d
+```
 
-> mvn clean install
+✅ Access the application: [http://localhost](http://localhost)
 
-Launch Back-end:
+## 🔁 CI/CD Workflow
 
->  mvn spring-boot:run
+This repository uses GitHub Actions for CI/CD automation.
 
-Launch the tests:
+### 🔄 Steps:
 
-> mvn clean install
+---
 
-### Docker
+#### 🧪 1. Backend Tests with Coverage
 
-Build the container:
+-  Set up JDK 11
+-  Cache and install Maven dependencies
+-  Run unit tests on the backend
+-  Generate and upload JaCoCo coverage report
 
-> docker build -t bobapp-back .  
+---
 
-Start the container:
+#### 🧪 2. Frontend Tests with Coverage
 
-> docker run -p 8080:8080 --name bobapp-back -d bobapp-back 
+-  Set up Node.js
+-  Cache and install npm dependencies
+-  Run unit tests with code coverage
+-  Generate and upload frontend coverage report
+
+---
+
+#### 📊 3. SonarCloud Analysis
+
+-  Download backend and frontend coverage reports
+-  Check if each coverage file (`lcov.info`) and related source files are properly downloaded 
+-  Install and run SonarScanner
+-  Push analysis results to SonarCloud
+
+---
+
+#### 🐳 4. Docker Image Build & Push
+
+-  Set up Docker Buildx  
+-  Authenticate with Docker Hub  
+-  Build and push the backend Docker image  
+-  Build and push the frontend Docker image
+

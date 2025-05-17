@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./back
+    image: hoaktuah/bobapp-back
+    container_name: bobapp-back
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./front
+    image: hoaktuah/bobapp-front
+    container_name: bobapp-front
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
