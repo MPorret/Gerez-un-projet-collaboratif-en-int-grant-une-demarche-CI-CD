@@ -19,7 +19,7 @@ This project integrates Docker for containerization and GitHub Actions for CI/CD
 - Spring Boot
 - Maven
 
-### 🚀 Front-end 
+### 🚀 Front-end  
 
 1. Navigate to the front-end folder:
 ```bash
