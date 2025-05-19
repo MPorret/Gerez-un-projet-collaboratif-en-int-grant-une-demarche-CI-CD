@@ -22,4 +22,8 @@ export class AppComponent implements OnInit {
   public getRandomJoke(): void {
     this.jokesService.getRandomJoke();
   }
+
+  public GetTwoRandomJokes(): void {
+    this.jokesService.GetTwoRandomJoke();
+  }
 }
