@@ -70,9 +70,9 @@ jobs:
           # Tag de l'image à construire
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-back:${{ inputs.tag }}
           # Charge le cache depuis GitHub Actions pour ce commit (scope basé sur le SHA du commit)
-          cache-from: type=gha,scope=backend-build-cache-${{ github.sha }}
+          cache-from: type=local,src=backend-build-cache-${{ github.sha }}
           # Sauvegarde le cache vers GitHub Actions (mode max pour tout sauvegarder)
-          cache-to: type=gha,scope=backend-build-cache-${{ github.sha }},mode=max
+          cache-to: type=local,dest=backend-build-cache-${{ github.sha }},mode=max
 
 
   # Contruit l'image du frontend et met le produit en cache (en utilisant le cache GitHub Actions)
@@ -109,9 +109,9 @@ jobs:
           # Tag l'image contruite pour information
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-front:${{ inputs.tag }}
           # Charge le cache depuis GitHub Actions pour ce commit (scope basé sur le SHA du commit)
-          cache-from: type=gha,scope=frontend-build-cache-${{ github.sha }}
+          cache-from: type=local,src=frontend-build-cache-${{ github.sha }}
           # Sauvegarde le cache vers GitHub Actions (mode max pour tout sauvegarder)
-          cache-to: type=gha,scope=frontend-build-cache-${{ github.sha }},mode=max
+          cache-to: type=local,dest=frontend-build-cache-${{ github.sha }},mode=max
 
 
   # Envoie les images construites vers Docker Hub
@@ -165,7 +165,7 @@ jobs:
           # Tag de l'image à pousser
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-back:${{ inputs.tag }}
           # On réutilise le cache du job précédent (Cache de GitHub Actions)
-          cache-from: type=gha,scope=backend-build-cache-${{ github.sha }}
+          cache-from: type=local,src=backend-build-cache-${{ github.sha }}
 
       # Étape 4 : Pousser l'image du frontend
       - name: Push Angular Frontend image
@@ -180,4 +180,4 @@ jobs:
           # Tag de l'image à pousser
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-front:${{ inputs.tag }}
           # On réutilise le cache du job précédent (Cache de GitHub Actions)
-          cache-from: type=gha,scope=frontend-build-cache-${{ github.sha }}
+          cache-from: type=local,src=frontend-build-cache-${{ github.sha }}
