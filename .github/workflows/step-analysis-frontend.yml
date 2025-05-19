@@ -37,6 +37,7 @@ jobs:
           # pour une meilleure pertinence de l'analyse
           fetch-depth: 0
 
+      # Étape 2 : Utiliser le cache de npm
       - name: Cache Node Modules
         uses: actions/cache@v4
         with:
@@ -44,38 +45,38 @@ jobs:
           key: ${{ runner.os }}-node
           restore-keys: ${{ runner.os }}-node
 
-      # Étape 2 : Installer Node.js 18 et récupérer le cache de npm
+      # Étape 3 : Installer Node.js 18 et récupérer le cache de npm
       - name: Use Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
 
-      # Étape 3 : Installer les dépendances du projet
+      # Étape 4 : Installer les dépendances du projet
       - name: Npm install dependencies
         run: npm ci --no-audit --progress=false
         working-directory: front
 
-      # Étape 4 : Compiler le frontend
+      # Étape 5 : Compiler le frontend
       - name: Build frontend
         run: npm run build
         working-directory: front
 
-      # Étape 5 : Tester le frontend
+      # Étape 6 : Tester le frontend
       - name: Run frontend tests
         run: npm run test:ci
         working-directory: front
 
-      # Étape 6 : Utiliser le cache de SonarQube
+      # Étape 7 : Utiliser le cache de SonarQube
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-          
 
-      # Étape 7 - A : Analyser le code avec SonarQube (Pull Request)
+
+      # Étape 8 - A : Analyser le code avec SonarQube (Pull Request)
       - name: Analyze with SonarQube
         uses: SonarSource/sonarqube-scan-action@v5
         if: ${{ github.event_name == 'pull_request' || github.base_ref == 'refs/heads/release' }}
@@ -90,7 +91,7 @@ jobs:
             --define sonar.host.url=${{ secrets.SONAR_HOST_URL }}
             --define sonar.qualitygate.wait=true
 
-      # Étape 7 - B : Analyser le code avec SonarQube (Branch)
+      # Étape 8 - B : Analyser le code avec SonarQube (Branch)
       - name: Analyze with SonarQube
         uses: SonarSource/sonarqube-scan-action@v5
         if: ${{ github.event_name != 'pull_request' && github.base_ref != 'refs/heads/release' }}

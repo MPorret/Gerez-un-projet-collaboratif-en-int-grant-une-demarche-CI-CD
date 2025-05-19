@@ -36,6 +36,7 @@ jobs:
           # Récupère seulement le dernier commit
           fetch-depth: 1
 
+      # Étape 2 : Récupérer le cache de npm
       - name: Cache Node Modules
         uses: actions/cache@v4
         with:
@@ -43,30 +44,30 @@ jobs:
           key: ${{ runner.os }}-node
           restore-keys: ${{ runner.os }}-node
 
-      # Étape 2 : Installer Node.js 18 et récupérer le cache de npm
+      # Étape 3 : Installer Node.js 18 et récupérer le cache de npm
       - name: Use Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      # Étape 3 : Installer les dépendances du projet
+      # Étape 4 : Installer les dépendances du projet
       - name: Npm install dependencies
         run: npm ci --prefer-offline --no-audit --progress=false
         working-directory: front
 
-      # Étape 4 : Tester le projet
+      # Étape 5 : Tester le projet
       - name: Run project tests
         run: npm run test:ci
         working-directory: front
 
-      # Étape 5 : Envoyer le rapport de couverture
+      # Étape 6 : Envoyer le rapport de couverture
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         with:
           name: karma-report
           path: front/coverage
 
-      # Étape 6 : Générer le rapport de test Github
+      # Étape 7 : Générer le rapport de test Github
       - name: Generate Github Test Report
         uses: phoenix-actions/test-reporting@v15
         # ID de l'étape pour pouvoir l'utiliser dans d'autres jobs
@@ -84,7 +85,7 @@ jobs:
           # Format du rapport de test à utiliser
           reporter: java-junit
 
-      # Étape 7 : Lire les variables de sortie
+      # Étape 8 : Lire les variables de sortie
       - name: Print frontend report URL
         run: |
           echo "url is ${{ steps.test-report-frontend.outputs.runHtmlUrl }}"
