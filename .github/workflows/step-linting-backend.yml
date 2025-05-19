@@ -76,3 +76,11 @@ jobs:
           # Nom de l'artefact qui sera créé
           name: checkstyle-report
           path: back/target/reports/*
+
+      # Étape 8 : Analyser le rapport Checkstyle
+      - name: Process Checkstyle Report
+        uses: jwgmeligmeyling/checkstyle-github-action@master
+        with:
+          name: Backend Linting Report
+          title: Backend Linting Report
+          path: 'back/target/checkstyle-result.xml'
