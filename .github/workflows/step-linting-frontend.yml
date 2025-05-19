@@ -32,26 +32,22 @@ jobs:
           # Récupère seulement le dernier commit
           fetch-depth: 1
 
+      - name: Cache Node Modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node
+          restore-keys: ${{ runner.os }}-node
+
       # Étape 2 : Installer Node.js 18 et récupérer le cache de npm
       - name: Use Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
 
       # Étape 3 : Installer les dépendances du projet
       - name: Install dependencies
         run: npm ci --no-audit --progress=false
-        working-directory: front
-
-
-      - name: Git status
-        run: git status
-        working-directory: front
-
-      - name: Git diff
-        run: git diff
         working-directory: front
 
       # Étape 4 : Exécuter le lint avec eslint
@@ -78,3 +74,4 @@ jobs:
         with:
           report-json: front/reports/eslint_report.json
           fail-on-warning: false
+          check-name: Frontend Linting Report

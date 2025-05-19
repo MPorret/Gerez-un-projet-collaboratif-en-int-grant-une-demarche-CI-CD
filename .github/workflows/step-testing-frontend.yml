@@ -36,13 +36,18 @@ jobs:
           # Récupère seulement le dernier commit
           fetch-depth: 1
 
+      - name: Cache Node Modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node
+          restore-keys: ${{ runner.os }}-node
+
       # Étape 2 : Installer Node.js 18 et récupérer le cache de npm
       - name: Use Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
 
       # Étape 3 : Installer les dépendances du projet
       - name: Npm install dependencies
