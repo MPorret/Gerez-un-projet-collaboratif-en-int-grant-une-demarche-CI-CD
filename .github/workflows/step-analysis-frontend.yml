@@ -42,7 +42,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node
+          key: ${{ runner.os }}-node-${{ github.ref_name }}
           restore-keys: ${{ runner.os }}-node
 
       # Étape 3 : Installer Node.js 18 et récupérer le cache de npm

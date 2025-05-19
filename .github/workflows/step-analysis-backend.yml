@@ -42,7 +42,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2
+          key: ${{ runner.os }}-m2-${{ github.ref_name }}
           restore-keys: ${{ runner.os }}-m2
 
       # Étape 3 : Installer Java 11
@@ -63,7 +63,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
+          key: ${{ runner.os }}-sonar-${{ github.ref_name }}
           restore-keys: ${{ runner.os }}-sonar
 
       # Étape 6 - A : Analyser le code avec SonarQube (Pull Request)
