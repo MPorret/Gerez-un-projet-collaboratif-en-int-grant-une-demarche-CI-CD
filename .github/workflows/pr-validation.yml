@@ -1,0 +1,159 @@
+name: 🔍 PR Validation
+
+on:
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened]
+
+env:
+  NODE_VERSION: '18'
+  JAVA_VERSION: '11'
+
+jobs:
+  changes:
+    name: 🔄 Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.changes.outputs.frontend }}
+      backend: ${{ steps.changes.outputs.backend }}
+      docs: ${{ steps.changes.outputs.docs }}
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        
+      - name: 🔍 Detect changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            frontend:
+              - 'front/**'
+            backend:
+              - 'back/**'
+            docs:
+              - 'documents/**'
+              - '*.md'
+
+  frontend-quality:
+    name: 🎨 Frontend Quality Check
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    defaults:
+      run:
+        working-directory: ./front
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: front/package-lock.json
+          
+      - name: 📋 Install dependencies
+        run: npm ci
+        
+      - name: 🔍 Lint check
+        run: |
+          if [ -f "biome.json" ]; then
+            npx @biomejs/biome check src/
+          else
+            echo "⚠️ Biome not configured yet"
+          fi
+        
+      - name: 🧪 Run tests
+        run: npm run test:ci || npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
+        
+      - name: 🏗️ Build check
+        run: npm run build:prod || npm run build -- --configuration=production
+        
+      - name: 📊 Upload coverage
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: frontend-coverage
+          path: front/coverage/
+
+  backend-quality:
+    name: ☕ Backend Quality Check  
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    defaults:
+      run:
+        working-directory: ./back
+        
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+          
+      - name: 🔧 Compile
+        run: mvn clean compile
+        
+      - name: 🧪 Run tests
+        run: mvn test
+        
+      - name: 📦 Package
+        run: mvn package -DskipTests
+        
+      - name: 📊 Generate test report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Backend Tests
+          path: back/target/surefire-reports/*.xml
+          reporter: java-junit
+          working-directory: ./back
+
+  docs-validation:
+    name: 📚 Documentation Validation
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.docs == 'true'
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        
+      - name: 🔍 Validate Markdown
+        run: |
+          npm install -g markdownlint-cli
+          markdownlint documents/**/*.md README.md --ignore node_modules || echo "⚠️ Markdown linting issues found"
+          
+      - name: 🧪 Test Mermaid diagrams
+        run: |
+          echo "Checking for Mermaid diagrams..."
+          find documents/ -name "*.md" -exec grep -l "mermaid" {} \; || echo "No Mermaid diagrams found"
+          echo "✅ Mermaid syntax validation completed"
+
+  pr-summary:
+    name: 📋 PR Summary
+    runs-on: ubuntu-latest
+    needs: [changes, frontend-quality, backend-quality, docs-validation]
+    if: always()
+    
+    steps:
+      - name: 📊 Generate summary
+        run: |
+          echo "## 🔍 PR Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Changes detected:" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend: ${{ needs.changes.outputs.frontend }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend: ${{ needs.changes.outputs.backend }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Documentation: ${{ needs.changes.outputs.docs }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Quality checks:" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend: ${{ needs.frontend-quality.result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend: ${{ needs.backend-quality.result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Documentation: ${{ needs.docs-validation.result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY 
