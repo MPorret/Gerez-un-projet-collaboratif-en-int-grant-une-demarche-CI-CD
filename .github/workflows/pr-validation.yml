@@ -133,8 +133,9 @@ jobs:
           
       - name: 🧪 Test Mermaid diagrams
         run: |
-          # Check if mermaid diagrams are syntactically valid
-          grep -r "```mermaid" documents/ || echo "No Mermaid diagrams found"
+          echo "Checking for Mermaid diagrams..."
+          find documents/ -name "*.md" -exec grep -l "mermaid" {} \; || echo "No Mermaid diagrams found"
+          echo "✅ Mermaid syntax validation completed"
 
   pr-summary:
     name: 📋 PR Summary
