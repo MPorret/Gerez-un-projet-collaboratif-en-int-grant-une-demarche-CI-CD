@@ -5,8 +5,18 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration=production",
+    "build:staging": "ng build --configuration=staging",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "test:ci": "ng test --watch=false --browsers=ChromeHeadless --code-coverage",
+    "lint": "biome lint src/",
+    "lint:fix": "biome lint --apply src/",
+    "format": "biome format --write src/",
+    "format:check": "biome format src/",
+    "check": "biome check src/",
+    "check:fix": "biome check --apply src/",
+    "pre-commit": "bash scripts/pre-commit.sh"
   },
   "private": true,
   "dependencies": {
@@ -28,6 +38,7 @@
     "@angular-devkit/build-angular": "14.2.1",
     "@angular/cli": "14.2.1",
     "@angular/compiler-cli": "14.2.0",
+    "@biomejs/biome": "^1.4.0",
     "@types/jasmine": "4.3.0",
     "jasmine-core": "4.4.0",
     "karma": "6.4.0",
