@@ -51,7 +51,11 @@ jobs:
         with:
           name: frontend-coverage-report
           path: front/coverage/
-
+          
+      - name: Generate dependency classpath for Sonar
+        run: mvn dependency:build-classpath -Dmdep.outputFile=.sonar/classpath.txt
+        working-directory: ./back
+        
       # Étape finale et nouvelle
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
