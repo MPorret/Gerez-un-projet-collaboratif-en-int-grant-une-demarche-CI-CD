@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  test-and-report: # J'ai renommé le job pour qu'il soit plus descriptif
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -23,17 +23,28 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
+          cache-dependency-path: front/package-lock.json
 
       - name: Run Backend Tests with Maven
-        # Le pom.xml est dans le dossier /back
         run: mvn -B test
         working-directory: ./back
 
+      - name: Upload backend coverage report (JaCoCo)
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: back/target/site/jacoco/
+
       - name: Install Frontend Dependencies
-        # Le package.json est dans le dossier /front
         run: npm install
         working-directory: ./front
       
-      - name: Run Frontend Tests
-        run: npm test -- --watch=false --browsers=ChromeHeadless
+      - name: Run Frontend Tests and generate coverage
+        run: npm test -- --code-coverage --watch=false --browsers=ChromeHeadless
         working-directory: ./front
+
+      - name: Upload frontend coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: front/coverage/
