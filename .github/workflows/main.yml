@@ -5,11 +5,14 @@ on:
     branches: [ main ]
 
 jobs:
-  test-and-report: # J'ai renommé le job pour qu'il soit plus descriptif
+  test-and-report:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        # On doit récupérer l'historique complet pour que Sonar puisse analyser la PR correctement
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 11 with Temurin distribution
         uses: actions/setup-java@v4
@@ -26,7 +29,7 @@ jobs:
           cache-dependency-path: front/package-lock.json
 
       - name: Run Backend Tests with Maven
-        run: mvn -B test
+        run: mvn -B verify # On utilise 'verify' au lieu de 'test' pour s'assurer que tout est bien packagé avant l'analyse
         working-directory: ./back
 
       - name: Upload backend coverage report (JaCoCo)
@@ -48,3 +51,10 @@ jobs:
         with:
           name: frontend-coverage-report
           path: front/coverage/
+
+      # Étape finale et nouvelle
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
