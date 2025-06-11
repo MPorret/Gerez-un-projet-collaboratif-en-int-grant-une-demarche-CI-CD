@@ -1,0 +1,39 @@
+name: CI Pipeline for Bob's App
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11 with Temurin distribution
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Run Backend Tests with Maven
+        # Le pom.xml est dans le dossier /back
+        run: mvn -B test
+        working-directory: ./back
+
+      - name: Install Frontend Dependencies
+        # Le package.json est dans le dossier /front
+        run: npm install
+        working-directory: ./front
+      
+      - name: Run Frontend Tests
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+        working-directory: ./front
