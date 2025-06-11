@@ -23,14 +23,14 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
+          # On précise où se trouve le fichier package-lock.json pour le cache
+          cache-dependency-path: front/package-lock.json
 
       - name: Run Backend Tests with Maven
-        # Le pom.xml est dans le dossier /back
         run: mvn -B test
         working-directory: ./back
 
       - name: Install Frontend Dependencies
-        # Le package.json est dans le dossier /front
         run: npm install
         working-directory: ./front
       
