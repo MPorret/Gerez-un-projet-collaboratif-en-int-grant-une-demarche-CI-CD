@@ -44,7 +44,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: karma-report
-          path: front
+          path: ./front
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
         with:
