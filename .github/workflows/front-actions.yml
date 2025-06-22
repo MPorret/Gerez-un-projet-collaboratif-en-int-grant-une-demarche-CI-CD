@@ -1,6 +1,13 @@
 name: Front jobs
 run-name: Front jobs
-on: [pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
 jobs:
   Test_Front:
     name: Build and Test

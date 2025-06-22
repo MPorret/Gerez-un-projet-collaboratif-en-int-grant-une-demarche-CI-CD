@@ -1,6 +1,13 @@
 name: Back jobs
 run-name: Back jobs
-on: [pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
 jobs:
   Test_Back:
     name: Build and Test Back
