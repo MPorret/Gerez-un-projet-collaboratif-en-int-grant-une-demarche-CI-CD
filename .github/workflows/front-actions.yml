@@ -1,0 +1,46 @@
+name: Front jobs
+run-name: Front jobs
+on: [pull_request]
+jobs:
+  Test_Front:
+    name: Build and Test
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ./front
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Build and Test
+        run: |
+          npm install
+          npx ng test --watch=false --code-coverage
+
+      - name: Upload Report
+        uses: "actions/upload-artifact@v4"
+        with:
+          name: karma-report
+          path: ${{ github.workspace }}/front/coverage
+  sonarqube:
+    name: SonarQube
+    runs-on: ubuntu-latest
+    needs: [Test_Front]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Download frontend coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: karma-report
+          path: front
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        with:
+          projectBaseDir: ./front
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
