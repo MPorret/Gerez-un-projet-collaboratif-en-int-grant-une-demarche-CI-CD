@@ -69,7 +69,7 @@ jobs:
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=BobApp_backend -Dsonar.organization=mporret -Dsonar.projectBaseDir=back
   docker:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name === 'push'}}
+    if: ${{ github.event_name == 'push'}}
     steps:
       - uses: actions/checkout@v4
         with:
