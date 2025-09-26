@@ -10,6 +10,9 @@
         <p class="joke">{{ joke.joke }}</p>
         <p >{{ joke.response }}</p>
       </div>
+      <div *ngIf="!(joke$ | async)">
+        <p>Chargement...</p>
+      </div>
     </mat-card-content>
     <mat-divider inset></mat-divider>
     <mat-card-actions>
