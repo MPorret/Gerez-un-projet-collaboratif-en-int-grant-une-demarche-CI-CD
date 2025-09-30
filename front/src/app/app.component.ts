@@ -16,6 +16,7 @@ export class AppComponent implements OnInit {
   }
 
   public ngOnInit(): void {
+    console.log('We add some code to show sonarqube scanner');
     this.getRandomJoke();
   }
 
